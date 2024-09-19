@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".MealPlanFragment">
+
+    <!-- Avatar and notification button   -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp">
+        <!--    Avatar-->
+        <ImageView
+            android:id="@+id/img_user_ava"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="user avatar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/user_male" />
+
+        <!--    Notification button-->
+        <ImageView
+            android:id="@+id/img_noti"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="notification icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_noti" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Page title and more icon       -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:id="@+id/text_meal_plan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/meal_plan"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_view_meal_plan_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_more_horiz" />
+        <!--        <Spinner-->
+        <!--            android:id="@+id/spinner_meal_plan_actions"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:spinnerMode="dropdown"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            tools:ignore="SpeakableTextPresentCheck">-->
+
+        <!--        </Spinner>-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="10dp">
+
+        <ImageView
+            android:id="@+id/image_view_backward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_backward"></ImageView>
+
+        <TextView
+            android:id="@+id/text_view_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="16dp">
+
+        </TextView>
+
+        <ImageView
+            android:id="@+id/image_view_forward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_forward">
+
+        </ImageView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_meal_plan_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingVertical="16dp">
+
+        <TextView
+            android:id="@+id/text_view_generate_plan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="Generate meal plan for today"
+            android:textSize="14dp">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="Load blank meal plan"
+            android:textSize="14dp">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Copy from previous day"
+            android:textSize="14dp">
+
+        </TextView>
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/layout_suggested_meal_plan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_view_progresses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                app:cardCornerRadius="10dp"
+                app:elevation="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <!-- Carb progress widget -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <ProgressBar
+                                android:id="@+id/prog_bar_carb"
+                                style="@style/CircularDeterminateProgressBar"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:progress="60" />
+
+                            <TextView
+                                android:id="@+id/text_carb"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:text="Carb"
+                                app:layout_constraintEnd_toEndOf="@id/prog_bar_carb"
+                                app:layout_constraintStart_toStartOf="@id/prog_bar_carb"
+                                app:layout_constraintTop_toTopOf="@id/prog_bar_carb"></TextView>
+
+                            <TextView
+                                android:id="@+id/text_daily_recommended_carb"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="250g"
+                                app:layout_constraintEnd_toEndOf="@id/text_carb"
+                                app:layout_constraintStart_toStartOf="@id/text_carb"
+                                app:layout_constraintTop_toBottomOf="@id/text_carb"></TextView>
+
+                            <TextView
+                                android:id="@+id/text_progress_carb"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="-15dp"
+                                android:text="0%"
+                                app:layout_constraintEnd_toEndOf="@id/text_carb"
+                                app:layout_constraintStart_toStartOf="@id/text_carb"
+                                app:layout_constraintTop_toBottomOf="@id/prog_bar_carb"></TextView>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!-- Protein progress widget -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <ProgressBar
+                                android:id="@+id/prog_bar_protein"
+                                style="@style/CircularDeterminateProgressBar"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:progress="60" />
+
+                            <TextView
+                                android:id="@+id/text_protein"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:text="Protein"
+                                app:layout_constraintEnd_toEndOf="@id/prog_bar_protein"
+                                app:layout_constraintStart_toStartOf="@id/prog_bar_protein"
+                                app:layout_constraintTop_toTopOf="@id/prog_bar_protein">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/text_daily_recommended_protein"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="250g"
+                                app:layout_constraintEnd_toEndOf="@id/text_protein"
+                                app:layout_constraintStart_toStartOf="@id/text_protein"
+                                app:layout_constraintTop_toBottomOf="@id/text_protein">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/text_progress_protein"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="-15dp"
+                                android:text="0%"
+                                app:layout_constraintEnd_toEndOf="@id/text_protein"
+                                app:layout_constraintStart_toStartOf="@id/text_protein"
+                                app:layout_constraintTop_toBottomOf="@id/prog_bar_protein"></TextView>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!-- Fat progress widget -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <ProgressBar
+                                android:id="@+id/prog_bar_fat"
+                                style="@style/CircularDeterminateProgressBar"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:progress="60" />
+
+                            <TextView
+                                android:id="@+id/text_fat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:text="Fat"
+                                app:layout_constraintEnd_toEndOf="@id/prog_bar_fat"
+                                app:layout_constraintStart_toStartOf="@id/prog_bar_fat"
+                                app:layout_constraintTop_toTopOf="@id/prog_bar_fat">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/text_daily_recommended_fat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="250g"
+                                app:layout_constraintEnd_toEndOf="@id/text_fat"
+                                app:layout_constraintStart_toStartOf="@id/text_fat"
+                                app:layout_constraintTop_toBottomOf="@id/text_fat">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/text_progress_fat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="-15dp"
+                                android:text="0%"
+                                app:layout_constraintEnd_toEndOf="@id/text_fat"
+                                app:layout_constraintStart_toStartOf="@id/text_fat"
+                                app:layout_constraintTop_toBottomOf="@id/prog_bar_fat"></TextView>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!-- Calories progress widget-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <ProgressBar
+                                android:id="@+id/prog_bar_calories"
+                                style="@style/CircularDeterminateProgressBar"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:progress="60" />
+
+
+                            <TextView
+                                android:id="@+id/text_calories"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:text="Calories"
+                                app:layout_constraintEnd_toEndOf="@id/prog_bar_calories"
+                                app:layout_constraintStart_toStartOf="@id/prog_bar_calories"
+                                app:layout_constraintTop_toTopOf="@id/prog_bar_calories"></TextView>
+
+                            <TextView
+                                android:id="@+id/text_daily_recommended_calo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2000kcal"
+                                app:layout_constraintEnd_toEndOf="@id/text_calories"
+                                app:layout_constraintStart_toStartOf="@id/text_calories"
+                                app:layout_constraintTop_toBottomOf="@id/text_calories"></TextView>
+
+                            <TextView
+                                android:id="@+id/text_progress_calories"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="-15dp"
+                                android:text="0%"
+                                app:layout_constraintEnd_toEndOf="@id/text_calories"
+                                app:layout_constraintStart_toStartOf="@id/text_calories"
+                                app:layout_constraintTop_toBottomOf="@id/prog_bar_calories"></TextView>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Keep the pace, You are doing great">
+
+                    </TextView>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_view_progresses">
+                <!--Meal recycler view-->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_meal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:listitem="@layout/recycler_item_meal" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

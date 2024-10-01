@@ -80,6 +80,13 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".view.RegisterInformationActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".view.UserProfileActivity"
             android:exported="false">
             <meta-data

@@ -23,26 +23,22 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.math.log
 
 class RegisterActivity : AppCompatActivity() {
     private val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 
-    private var actLevelInt: Int? = null
     private lateinit var genderList: Spinner
     private var selectedGender: String? = null
     private val genders = arrayOf("Male", "Female")
-
-    private lateinit var activeLevelList: Spinner
-    private var selectedActiveLevel: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        val agreeCheckBox = findViewById<CheckBox>(R.id.register_agree_check_box)
-        val registerBtn = findViewById<Button>(R.id.register_emp_btn)
+        val registerBtn = findViewById<Button>(R.id.next_emp_btn)
 
         genderList = findViewById(R.id.gender)
         genderList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -69,38 +65,6 @@ class RegisterActivity : AppCompatActivity() {
         // Apply the adapter to the spinner
         genderList.adapter = adapter
 
-        activeLevelList = findViewById(R.id.activeLevel)
-        activeLevelList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedActiveLevel = parent?.getItemAtPosition(position) as? String
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedActiveLevel = null
-            }
-        }
-
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter.createFromResource(
-            this,
-            R.array.activeLevel_array, // Replace with your own array resource name
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            activeLevelList.adapter = adapter
-        }
-
-        agreeCheckBox.setOnClickListener {
-            registerBtn.isEnabled = agreeCheckBox.isChecked
-        }
-
         registerBtn.setOnClickListener {
             val fullName = findViewById<TextInputEditText>(R.id.fullname).text.toString()
 //            val email = "chie.bow.gu@gmail.com"
@@ -108,132 +72,18 @@ class RegisterActivity : AppCompatActivity() {
             val email = sharedPrefs.getString("user_email", "") ?: ""
             val userId = sharedPrefs.getInt("user_id", 0)
 
+            Log.d("RegisterActivity", "Button clicked!")
+
             val yearOfBirthText = findViewById<TextInputEditText>(R.id.yearofbirth).text.toString()
-            val gender = selectedGender.toString()
+//            if (fullName.isNotEmpty() && yearOfBirthText.isNotEmpty() && selectedGender != null) {
+                val intent = Intent(this, RegisterInformationActivity::class.java)
+                startActivity(intent)
+                finish()
+//            } else {
+//                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+//            }
 
-            val weightText = findViewById<TextInputEditText>(R.id.weight).text.toString()
-            val heightText = findViewById<TextInputEditText>(R.id.height).text.toString()
 
-            if (selectedActiveLevel.toString() == "Sedentary") {
-                actLevelInt = 1
-            } else if (selectedActiveLevel.toString() == "Lightly active") {
-                actLevelInt = 2
-            } else if (selectedActiveLevel.toString() == "Moderately active") {
-                actLevelInt = 3
-            } else if (selectedActiveLevel.toString() == "Very active") {
-                actLevelInt = 4
-            } else if (selectedActiveLevel.toString() == "Super active") {
-                actLevelInt = 5
-            }
-
-            if (fullName.isNotEmpty() && yearOfBirthText.isNotEmpty() &&
-                weightText.isNotEmpty() &&
-                heightText.isNotEmpty()
-            ) {
-
-                val yearOfBirth = yearOfBirthText.toInt()
-
-                val genderInt = if (gender == "Female") 0 else 1
-
-                val height = try {
-                    heightText.toFloatOrNull() ?: 0.0f
-                } catch (e: NumberFormatException) {
-                    return@setOnClickListener
-                }
-
-                val weight = try {
-                    weightText.toFloatOrNull() ?: 0.0f
-                } catch (e: NumberFormatException) {
-                    return@setOnClickListener
-                }
-
-                val user = User(
-                    userId,
-                    fullName,
-                    email,
-                    yearOfBirth,
-                    genderInt,
-                    height,
-                    weight,
-                    actLevelInt,
-                    0f,
-                    0f
-                )
-
-                GlobalScope.launch(Dispatchers.IO) {
-                    registerUser(user) { response, errorMessage ->
-                        Log.e("confirm", "clicked")
-                        runOnUiThread {
-                            if (response.isSuccessful) {
-                                // Registration successful
-                                Toast.makeText(
-                                    this@RegisterActivity,
-                                    "Registration successful",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-
-                                fetchUserProfile(userId) { user ->
-                                    user?.let {
-                                        createMealPref(it) { response, errorMessage ->
-                                            if (response.isSuccessful) {
-                                                val loginIntent =
-                                                    Intent(this@RegisterActivity, MainActivity::class.java)
-                                                val sharedPrefs =
-                                                    getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-                                                val editor = sharedPrefs.edit()
-                                                editor.putString("user_name", fullName)
-                                                startActivity(loginIntent)
-                                                finish()
-                                            }  else {
-                                                // Registration failed
-                                                if (errorMessage != null) {
-                                                    Toast.makeText(
-                                                        this@RegisterActivity,
-                                                        errorMessage,
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                    Log.e("Meal Pref", errorMessage)
-                                                } else {
-                                                    Toast.makeText(
-                                                        this@RegisterActivity,
-                                                        "Failed to create meal pref",
-                                                        Toast.LENGTH_SHORT
-                                                    )
-                                                        .show()
-                                                }
-                                            }
-                                        }
-                                    } ?: run {
-                                        // Handle the case when user is null (error occurred)
-                                        Toast.makeText(this@RegisterActivity, "Failed to retrieve user profile", Toast.LENGTH_SHORT).show()
-                                        Log.e("UserProfile", "Failed to retrieve user profile")
-                                    }
-                                }
-                            } else {
-                                // Registration failed
-                                if (errorMessage != null) {
-                                    Toast.makeText(
-                                        this@RegisterActivity,
-                                        errorMessage,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        this@RegisterActivity,
-                                        "Failed to register user",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT)
-                    .show()
-            }
         }
     }
 

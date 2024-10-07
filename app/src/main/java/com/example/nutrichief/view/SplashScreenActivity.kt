@@ -50,7 +50,7 @@ class SplashScreenActivity : AppCompatActivity() {
         } else {
             //go to register screen
             Handler().postDelayed({
-                val intent = Intent(this, RegisterActivity::class.java)
+                val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 finish()
 

@@ -180,6 +180,13 @@
                     android:enabled="true"/>
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/signInTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Already have account? Sign up" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

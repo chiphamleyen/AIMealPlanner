@@ -77,5 +77,6 @@
     <string name="preference">Dietary Preference</string>
     <string name="password">Password</string>
     <string name="next">Next</string>
+    <string name="login_account_title">Login</string>
 
 </resources>

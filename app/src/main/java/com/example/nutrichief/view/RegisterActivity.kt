@@ -68,6 +68,13 @@ class RegisterActivity : AppCompatActivity() {
         // Apply the adapter to the spinner
         genderList.adapter = adapter
 
+        val signInTextView = findViewById<TextView>(R.id.signInTextView)
+        signInTextView.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         registerBtn.setOnClickListener {
             val fullName = findViewById<TextInputEditText>(R.id.fullname).text.toString()
             val email = findViewById<TextInputEditText>(R.id.email).text.toString()

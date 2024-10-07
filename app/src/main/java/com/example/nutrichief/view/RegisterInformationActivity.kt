@@ -127,8 +127,7 @@ class RegisterInformationActivity : AppCompatActivity() {
             val instant = zonedDateTime.toInstant()
             val dateUtil: Date = Date.from(instant)
 
-            if (weightText.isNotEmpty() && heightText.isNotEmpty()
-            ) {
+            if (weightText.isNotEmpty() && heightText.isNotEmpty()) {
 //                val genderInt = if (gender == "Female") 0 else 1
 //
                 val height = try {
@@ -170,6 +169,9 @@ class RegisterInformationActivity : AppCompatActivity() {
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
+
+                                val loginIntent = Intent(this@RegisterInformationActivity, LoginActivity::class.java)
+                                startActivity(loginIntent)
 
 //                                fetchUserProfile(userId) { user ->
 //                                    user?.let {
@@ -278,7 +280,6 @@ class RegisterInformationActivity : AppCompatActivity() {
     //                callback(Response.Builder().code(-1).build(), e.message)
             }
         }
-
     }
 
 //    private fun createMealPref(customer: User, callback: (Response, String?) -> Unit) {

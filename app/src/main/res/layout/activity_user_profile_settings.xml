@@ -128,7 +128,7 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_age_custom"
                         android:drawablePadding="10dp"
-                        android:hint="@string/year_of_birth"
+                        android:hint="@string/date_of_birth"
                         android:inputType="text" />
 
                 </com.google.android.material.textfield.TextInputLayout>

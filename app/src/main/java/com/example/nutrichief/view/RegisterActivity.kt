@@ -23,6 +23,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import java.io.IOException
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.math.log
 
 class RegisterActivity : AppCompatActivity() {
@@ -67,67 +70,81 @@ class RegisterActivity : AppCompatActivity() {
 
         registerBtn.setOnClickListener {
             val fullName = findViewById<TextInputEditText>(R.id.fullname).text.toString()
+            val email = findViewById<TextInputEditText>(R.id.email).text.toString()
+            val gender = selectedGender.toString()
+            val dateOfBirthText = findViewById<TextInputEditText>(R.id.dateofbirth).text.toString()
+            val password = findViewById<TextInputEditText>(R.id.pwd).text.toString()
 //            val email = "chie.bow.gu@gmail.com"
-            val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-            val email = sharedPrefs.getString("user_email", "") ?: ""
-            val userId = sharedPrefs.getInt("user_id", 0)
+//            val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+//            val email = sharedPrefs.getString("user_email", "") ?: ""
+//            val userId = sharedPrefs.getInt("user_id", 0)
 
-            Log.d("RegisterActivity", "Button clicked!")
-
-            val yearOfBirthText = findViewById<TextInputEditText>(R.id.yearofbirth).text.toString()
-//            if (fullName.isNotEmpty() && yearOfBirthText.isNotEmpty() && selectedGender != null) {
+            if (fullName.isNotEmpty() && dateOfBirthText.isNotEmpty() &&
+                gender.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty()
+            ) {
                 val intent = Intent(this, RegisterInformationActivity::class.java)
                 startActivity(intent)
+
+                // Save data to SharedPreferences
+                val userRegister = getSharedPreferences("UserRegister", Context.MODE_PRIVATE)
+                val editor = userRegister.edit()
+                editor.putString("name", fullName)
+                editor.putString("email", email)
+                editor.putString("gender", gender)
+                editor.putString("birth", dateOfBirthText)
+                editor.putString("password", password)
+                editor.apply()
+
+                Log.d("RegisterActivity", "Button clicked!")
+
                 finish()
-//            } else {
-//                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-//            }
-
-
-        }
-    }
-
-    private fun registerUser(customer: User, callback: (Response, String?) -> Unit) {
-        GlobalScope.launch {
-            try {
-                val jsonMediaType = "application/json; charset=utf-8".toMediaType()
-                val requestBody = jacksonObjectMapper().writeValueAsString(customer)
-                    .toRequestBody(jsonMediaType)
-
-
-                val request = Request.Builder()
-                    .url("http://10.0.2.2:8001/apis/user/update")
-                    .post(requestBody)
-                    .build()
-
-
-                client.newCall(request).enqueue(object : Callback {
-                    override fun onResponse(call: Call, response: Response) {
-                        val responseBody = response.body?.string()
-                        callback(response, responseBody)
-                    }
-
-                    override fun onFailure(call: Call, e: IOException) {
-                        // Handle network failure
-//                        callback(Response.Builder().code(-1).build(), e.message)
-                    }
-                })
-
-
-            } catch (e: Exception) {
-                // Handle other exceptions
-//                callback(Response.Builder().code(-1).build(), e.message)
+            } else {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
+
+//    private fun registerUser(customer: User, callback: (Response, String?) -> Unit) {
+//        GlobalScope.launch {
+//            try {
+//                val jsonMediaType = "application/json; charset=utf-8".toMediaType()
+//                val requestBody = jacksonObjectMapper().writeValueAsString(customer)
+//                    .toRequestBody(jsonMediaType)
+//
+//
+//                val request = Request.Builder()
+//                    .url("http://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/account/signup")
+//                    .post(requestBody)
+//                    .build()
+//
+//
+//                client.newCall(request).enqueue(object : Callback {
+//                    override fun onResponse(call: Call, response: Response) {
+//                        val responseBody = response.body?.string()
+//                        callback(response, responseBody)
+//                    }
+//
+//                    override fun onFailure(call: Call, e: IOException) {
+//                        // Handle network failure
+////                        callback(Response.Builder().code(-1).build(), e.message)
+//                    }
+//                })
+//
+//
+//            } catch (e: Exception) {
+//                // Handle other exceptions
+////                callback(Response.Builder().code(-1).build(), e.message)
+//            }
+//        }
+//
+//    }
 
     private fun createMealPref(customer: User, callback: (Response, String?) -> Unit) {
         GlobalScope.launch {
             try {
                 val requestBodyCreateMealPref = JSONObject()
-                requestBodyCreateMealPref.put("user_id", customer.user_id)
-                requestBodyCreateMealPref.put("pref_calo", customer.user_tdee)
+//                requestBodyCreateMealPref.put("user_id", customer.user_id)
+//                requestBodyCreateMealPref.put("pref_calo", customer.user_tdee)
                 requestBodyCreateMealPref.put("pref_time", 60)
                 requestBodyCreateMealPref.put("pref_goal", 1)
                 requestBodyCreateMealPref.put("pref_date_range", 1)

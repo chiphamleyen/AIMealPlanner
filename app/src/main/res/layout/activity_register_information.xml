@@ -103,7 +103,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/pref"
+                    android:id="@+id/diet_pref"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/baseline_favorite_border_24"
@@ -166,7 +166,7 @@
                     android:text="@string/register"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:enabled="false"/>
+                    android:enabled="true"/>
             </LinearLayout>
 
         </LinearLayout>

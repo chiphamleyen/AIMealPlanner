@@ -145,58 +145,58 @@ class UserProfileSettingsActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                val user = User(
-                    userId,
-                    fullName,
-                    email,
-                    yearOfBirth,
-                    genderInt,
-                    height,
-                    weight,
-                    actLevelInt,
-                    null,
-                    null
-                )
-
-                GlobalScope.launch(Dispatchers.IO) {
-
-                    updateUser(user) { response, errorMessage ->
-                        Log.e("confirm", "clicked")
-                        runOnUiThread {
-                            if (response.isSuccessful) {
-                                // Registration successful
-                                Toast.makeText(
-                                    this@UserProfileSettingsActivity,
-                                    "Update Profile Successful",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                val loginIntent = Intent(
-                                    this@UserProfileSettingsActivity,
-                                    UserProfileActivity::class.java
-                                )
-                                startActivity(loginIntent)
-                                finish()
-                            } else {
-                                // Registration failed
-                                if (errorMessage != null) {
-                                    Toast.makeText(
-                                        this@UserProfileSettingsActivity,
-                                        errorMessage,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        this@UserProfileSettingsActivity,
-                                        "Failed to register user",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                }
-                            }
-                        }
-                    }
-                }
+//                val user = User(
+//                    userId,
+//                    fullName,
+//                    email,
+//                    yearOfBirth,
+//                    genderInt,
+//                    height,
+//                    weight,
+//                    actLevelInt,
+//                    null,
+//                    null
+//                )
+//
+//                GlobalScope.launch(Dispatchers.IO) {
+//
+//                    updateUser(user) { response, errorMessage ->
+//                        Log.e("confirm", "clicked")
+//                        runOnUiThread {
+//                            if (response.isSuccessful) {
+//                                // Registration successful
+//                                Toast.makeText(
+//                                    this@UserProfileSettingsActivity,
+//                                    "Update Profile Successful",
+//                                    Toast.LENGTH_SHORT
+//                                )
+//                                    .show()
+//                                val loginIntent = Intent(
+//                                    this@UserProfileSettingsActivity,
+//                                    UserProfileActivity::class.java
+//                                )
+//                                startActivity(loginIntent)
+//                                finish()
+//                            } else {
+//                                // Registration failed
+//                                if (errorMessage != null) {
+//                                    Toast.makeText(
+//                                        this@UserProfileSettingsActivity,
+//                                        errorMessage,
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+//                                } else {
+//                                    Toast.makeText(
+//                                        this@UserProfileSettingsActivity,
+//                                        "Failed to register user",
+//                                        Toast.LENGTH_SHORT
+//                                    )
+//                                        .show()
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             } else {
                 Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT)
                     .show()
@@ -218,8 +218,8 @@ class UserProfileSettingsActivity : AppCompatActivity() {
                 .build()
 
             val requestBodyUpdateMealPref = JSONObject()
-            requestBodyUpdateMealPref.put("user_id", customer.user_id)
-            requestBodyUpdateMealPref.put("pref_calo", customer.user_tdee)
+//            requestBodyUpdateMealPref.put("user_id", customer.user_id)
+//            requestBodyUpdateMealPref.put("pref_calo", customer.user_tdee)
             requestBodyUpdateMealPref.put("pref_time", 60)
             requestBodyUpdateMealPref.put("pref_goal", 0)
             requestBodyUpdateMealPref.put("pref_date_range", 1)

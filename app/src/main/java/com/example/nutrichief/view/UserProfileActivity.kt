@@ -61,47 +61,47 @@ class UserProfileActivity : AppCompatActivity() {
         val userEmail = sharedPrefs.getString("user_email", "") ?: ""
         val userId = sharedPrefs.getInt("user_id", 0)
 
-        fetchUserProfile(userId) { user ->
-            user?.let {
-                // Populate user profile data to TextViews
-                fullName.text = it.user_name
-                email.text = it.user_email
-
-                var genderProfile = if (it.user_gender == 0) "Female" else "Male"
-                gender.text = genderProfile
-                val userBirth = it.user_year_of_birth
-                val currentYear = LocalDate.now().year
-                if (userBirth != null) {
-                    age.text = (currentYear - userBirth.toInt()).toString()
-                }
-                height.text = "${it.user_height} cm"
-                weight.text = "${it.user_weight} kg"
-
-                var actLevelProfile = it.user_activity_level
-                if (actLevelProfile != null) {
-                    if (actLevelProfile.toInt() == 1) {
-                        actLevelString = "Sedentary"
-                    } else if (actLevelProfile.toInt() == 2) {
-                        actLevelString = "Lightly active"
-                    } else if (actLevelProfile.toInt() == 3) {
-                        actLevelString = "Moderately active"
-                    } else if (actLevelProfile.toInt() == 4) {
-                        actLevelString = "Very active"
-                    } else if (actLevelProfile.toInt() == 5) {
-                        actLevelString = "Super active"
-                    }
-                }
-
-                actLevel.text = actLevelString
-                bmi.text = it.user_bmi.toString() + it.user_bmi?.let { it1 -> bmiRate(it1) }
-                tdee.text = it.user_tdee.toString() + " calories per day"
-
-            } ?: run {
-                // Handle the case when user is null (error occurred)
-                Toast.makeText(this, "Failed to retrieve user profile", Toast.LENGTH_SHORT).show()
-                Log.e("UserProfile", "Failed to retrieve user profile")
-            }
-        }
+//        fetchUserProfile(userId) { user ->
+//            user?.let {
+//                // Populate user profile data to TextViews
+//                fullName.text = it.user_name
+//                email.text = it.user_email
+//
+//                var genderProfile = if (it.user_gender == 0) "Female" else "Male"
+//                gender.text = genderProfile
+//                val userBirth = it.user_year_of_birth
+//                val currentYear = LocalDate.now().year
+//                if (userBirth != null) {
+//                    age.text = (currentYear - userBirth.toInt()).toString()
+//                }
+//                height.text = "${it.user_height} cm"
+//                weight.text = "${it.user_weight} kg"
+//
+//                var actLevelProfile = it.user_activity_level
+//                if (actLevelProfile != null) {
+//                    if (actLevelProfile.toInt() == 1) {
+//                        actLevelString = "Sedentary"
+//                    } else if (actLevelProfile.toInt() == 2) {
+//                        actLevelString = "Lightly active"
+//                    } else if (actLevelProfile.toInt() == 3) {
+//                        actLevelString = "Moderately active"
+//                    } else if (actLevelProfile.toInt() == 4) {
+//                        actLevelString = "Very active"
+//                    } else if (actLevelProfile.toInt() == 5) {
+//                        actLevelString = "Super active"
+//                    }
+//                }
+//
+//                actLevel.text = actLevelString
+//                bmi.text = it.user_bmi.toString() + it.user_bmi?.let { it1 -> bmiRate(it1) }
+//                tdee.text = it.user_tdee.toString() + " calories per day"
+//
+//            } ?: run {
+//                // Handle the case when user is null (error occurred)
+//                Toast.makeText(this, "Failed to retrieve user profile", Toast.LENGTH_SHORT).show()
+//                Log.e("UserProfile", "Failed to retrieve user profile")
+//            }
+//        }
     }
 
     fun goBack(view: View) { onBackPressed() }

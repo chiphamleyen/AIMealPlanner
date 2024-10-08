@@ -90,19 +90,15 @@
                 android:textAllCaps="false"
                 android:textColor="@color/white" />
 
+            <TextView
+                android:id="@+id/signUpTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Create New Account" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <LinearLayout
-        android:id="@+id/login_button_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

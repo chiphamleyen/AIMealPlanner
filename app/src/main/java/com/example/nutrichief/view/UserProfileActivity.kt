@@ -60,7 +60,7 @@ class UserProfileActivity : AppCompatActivity() {
         val jwtToken = sharedPreferences.getString("jwt_token", null)
 
         if (jwtToken != null) {
-            Log.d("JWT Token", jwtToken) // Sử dụng JWT token ở đây
+            Log.d("JWT Token", jwtToken)
         }
 
         fetchUserProfile(jwtToken) { user ->
@@ -112,18 +112,15 @@ class UserProfileActivity : AppCompatActivity() {
                 val errorCode = resultJson.optInt("error_code", -1)
 
                 if (errorCode == 0) {
-                    // Lấy dữ liệu từ trường "data"
                     val data = resultJson.optJSONObject("data")
 
-                    // Chuyển đổi JSON thành đối tượng User
                     val userObj = jacksonObjectMapper().readValue(data?.toString() ?: "", User::class.java)
 
                     callback(userObj)
                 } else {
-                    callback(null) // Trả về null nếu có lỗi xảy ra
+                    callback(null)
                 }
             } catch (e: Exception) {
-                // Xử lý lỗi
                 callback(null)
                 Log.e("UserProfile", "Failed to retrieve user profile: ${e.message}")
             }

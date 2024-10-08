@@ -32,12 +32,11 @@ class SplashScreenActivity : AppCompatActivity() {
         appLogoBack.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_decrease_anim))
         appTextBack.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_increase_anim))
 
-        // Retrieve user email from Intent
-        val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val userEmail = sharedPrefs.getString("email", null)
-        Log.i("intent", userEmail.toString())
+        // Retrieve JwT token from Intent
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val jwtToken = sharedPreferences.getString("jwt_token", null)
 
-        if (userEmail != null) {
+        if (jwtToken != null) {
             //go to home screen if already logged in
             Handler().postDelayed({
 //                val intent = Intent(this, MainActivity::class.java)

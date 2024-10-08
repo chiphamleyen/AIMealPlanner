@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/montserrat_semi_bold"
-                    android:text="@string/welcome"
+                    android:text="@string/full_name"
                     android:textColor="@color/purple_theme_color"
                     android:textSize="16sp" />
 
@@ -338,7 +338,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginEnd="10dp"
                                 android:contentDescription="@string/activity_level"
-                                android:src="@drawable/ic_act_level_custom" />
+                                android:src="@drawable/baseline_fastfood_24" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -349,15 +349,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/montserrat_bold"
-                                    android:text="@string/activity_level"
+                                    android:text="@string/allergy"
                                     android:textColor="@color/purple_theme_color"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                    android:id="@+id/profile_activityLevel"
+                                    android:id="@+id/profile_allergy"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/activity_level"
+                                    android:text="@string/allergy"
                                     android:textColor="@color/text_light_color"
                                     android:textSize="15sp" />
                             </LinearLayout>
@@ -386,9 +386,8 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginEnd="10dp"
-                                android:contentDescription="@string/bmi"
-                                android:src="@drawable/bmi"
-                                app:tint="#6173DF" />
+                                android:contentDescription="@string/preference"
+                                android:src="@drawable/baseline_favorite_border_24" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -399,70 +398,120 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/montserrat_bold"
-                                    android:text="@string/bmi"
+                                    android:text="@string/preference"
                                     android:textColor="@color/purple_theme_color"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                    android:id="@+id/profile_bmi"
-                                    android:layout_width="96dp"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/bmi" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="@dimen/profile_card_margin_vertical"
-                        app:cardCornerRadius="5dp"
-                        app:cardElevation="@dimen/profile_card_elevation"
-                        app:cardPreventCornerOverlap="false">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="15dp"
-                            android:layout_marginVertical="@dimen/profile_card_internal_vertical_space"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginEnd="10dp"
-                                android:contentDescription="@string/tdee"
-                                android:src="@drawable/tdee"
-                                app:tint="#6173DF" />
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
+                                    android:id="@+id/profile_diet_pref"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="@font/montserrat_bold"
-                                    android:text="@string/tdee"
-                                    android:textColor="@color/purple_theme_color"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:id="@+id/profile_tdee"
-                                    android:layout_width="204dp"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/tdee" />
-
+                                    android:text="@string/preference"
+                                    android:textColor="@color/text_light_color"
+                                    android:textSize="15sp" />
                             </LinearLayout>
 
                         </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
+
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginVertical="@dimen/profile_card_margin_vertical"-->
+<!--                        app:cardCornerRadius="5dp"-->
+<!--                        app:cardElevation="@dimen/profile_card_elevation"-->
+<!--                        app:cardPreventCornerOverlap="false">-->
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginHorizontal="15dp"-->
+<!--                            android:layout_marginVertical="@dimen/profile_card_internal_vertical_space"-->
+<!--                            android:gravity="center_vertical"-->
+<!--                            android:orientation="horizontal">-->
+
+<!--                            <ImageView-->
+<!--                                android:layout_width="30dp"-->
+<!--                                android:layout_height="30dp"-->
+<!--                                android:layout_marginEnd="10dp"-->
+<!--                                android:contentDescription="@string/bmi"-->
+<!--                                android:src="@drawable/bmi"-->
+<!--                                app:tint="#6173DF" />-->
+
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:orientation="vertical">-->
+
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:fontFamily="@font/montserrat_bold"-->
+<!--                                    android:text="@string/bmi"-->
+<!--                                    android:textColor="@color/purple_theme_color"-->
+<!--                                    android:textSize="12sp" />-->
+
+<!--                                <TextView-->
+<!--                                    android:id="@+id/profile_bmi"-->
+<!--                                    android:layout_width="96dp"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:text="@string/bmi" />-->
+
+<!--                            </LinearLayout>-->
+
+<!--                        </LinearLayout>-->
+
+<!--                    </androidx.cardview.widget.CardView>-->
+
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginVertical="@dimen/profile_card_margin_vertical"-->
+<!--                        app:cardCornerRadius="5dp"-->
+<!--                        app:cardElevation="@dimen/profile_card_elevation"-->
+<!--                        app:cardPreventCornerOverlap="false">-->
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginHorizontal="15dp"-->
+<!--                            android:layout_marginVertical="@dimen/profile_card_internal_vertical_space"-->
+<!--                            android:gravity="center_vertical"-->
+<!--                            android:orientation="horizontal">-->
+
+<!--                            <ImageView-->
+<!--                                android:layout_width="30dp"-->
+<!--                                android:layout_height="30dp"-->
+<!--                                android:layout_marginEnd="10dp"-->
+<!--                                android:contentDescription="@string/tdee"-->
+<!--                                android:src="@drawable/tdee"-->
+<!--                                app:tint="#6173DF" />-->
+
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:orientation="vertical">-->
+
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:fontFamily="@font/montserrat_bold"-->
+<!--                                    android:text="@string/tdee"-->
+<!--                                    android:textColor="@color/purple_theme_color"-->
+<!--                                    android:textSize="12sp" />-->
+
+<!--                                <TextView-->
+<!--                                    android:id="@+id/profile_tdee"-->
+<!--                                    android:layout_width="204dp"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:text="@string/tdee" />-->
+
+<!--                            </LinearLayout>-->
+
+<!--                        </LinearLayout>-->
+
+<!--                    </androidx.cardview.widget.CardView>-->
 
                 </LinearLayout>
 

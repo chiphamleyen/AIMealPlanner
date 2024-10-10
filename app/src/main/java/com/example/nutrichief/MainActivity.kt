@@ -15,7 +15,8 @@ import java.util.ArrayList
 
 class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener {
     @SuppressLint("MissingInflatedId")
-    private lateinit var mealPlanFragment: MealPlanFragment
+//    private lateinit var mealPlanFragment: MealPlanFragment
+    private val aiMealPlanFragment = AIMealPlanFragment()
     private val searchFragment = SearchFragment()
     private val communityFragment = CommunityFragment()
     private val orderFragment = OrderFragment()
@@ -27,15 +28,17 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
         bottomNavigationView.setOnItemSelectedListener(this)
 
-        var mealList = mutableListOf<Meal>()
-        mealPlanFragment = MealPlanFragment.newInstance(mealList as ArrayList<Meal>)
-        replaceFragment(mealPlanFragment)
+        replaceFragment(aiMealPlanFragment)
+
+//        var mealList = mutableListOf<Meal>()
+//        mealPlanFragment = MealPlanFragment.newInstance(mealList as ArrayList<Meal>)
+//        replaceFragment(mealPlanFragment)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_item_meal_plan -> {
-                replaceFragment(mealPlanFragment)
+                replaceFragment(aiMealPlanFragment)
             }
             R.id.nav_item_search -> {
                 replaceFragment(this.searchFragment)

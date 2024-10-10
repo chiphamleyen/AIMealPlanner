@@ -14,7 +14,6 @@
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/login_button_container"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -64,7 +63,7 @@
                         android:drawableStart="@drawable/baseline_password_24"
                         android:drawablePadding="10dp"
                         android:hint="@string/password"
-                        android:inputType="text" />
+                        android:inputType="textPassword" />
 
 
                 </com.google.android.material.textfield.TextInputLayout>

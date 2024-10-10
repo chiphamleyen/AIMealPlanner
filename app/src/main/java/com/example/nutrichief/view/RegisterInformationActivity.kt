@@ -101,8 +101,6 @@ class RegisterInformationActivity : AppCompatActivity() {
 //
 //
         registerBtn.setOnClickListener {
-//            val fullName = findViewById<TextInputEditText>(R.id.fullname).text.toString()
-////            val email = "chie.bow.gu@gmail.com"
             val userRegister = getSharedPreferences("UserRegister", Context.MODE_PRIVATE)
             val name = userRegister.getString("name", "") ?: ""
             val email = userRegister.getString("email", "") ?: ""
@@ -128,8 +126,6 @@ class RegisterInformationActivity : AppCompatActivity() {
             val dateUtil: Date = Date.from(instant)
 
             if (weightText.isNotEmpty() && heightText.isNotEmpty()) {
-//                val genderInt = if (gender == "Female") 0 else 1
-//
                 val height = try {
                     heightText.toFloatOrNull() ?: 0.0f
                 } catch (e: NumberFormatException) {

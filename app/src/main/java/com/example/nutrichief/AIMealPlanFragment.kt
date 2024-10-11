@@ -148,6 +148,7 @@ class AIMealPlanFragment : Fragment() {
         intent.putExtra("meal_protein", meal.protein)
         intent.putExtra("meal_fat", meal.fat)
         intent.putExtra("meal_ingredients", ArrayList(meal.ingredients))
+        intent.putExtra("meal_directions", ArrayList(meal.directions))
         startActivity(intent)
     }
 

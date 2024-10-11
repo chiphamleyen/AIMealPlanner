@@ -37,17 +37,6 @@ class RecipeDetailActivity : AppCompatActivity() {
     private lateinit var ingredientRecyclerView: RecyclerView
     private lateinit var adapter: IngredientsAdapter
 
-    private var recipeCalories: Float = 0.0f
-    private var recipeProtein: Float = 0.0f
-    private var recipeFat: Float = 0.0f
-    private var recipeCarb: Float = 0.0f
-
-    private var food_name: String = ""
-    private var food_desc: String = ""
-    private var food_ctime: Int = 0
-    private var food_ptime: Int = 0
-    private var food_img: String = ""
-
     private val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
@@ -63,6 +52,7 @@ class RecipeDetailActivity : AppCompatActivity() {
         val mealProtein = intent.getDoubleExtra("meal_protein", 0.0)
         val mealFat = intent.getDoubleExtra("meal_fat", 0.0)
         val mealIngredients = intent.getStringArrayListExtra("meal_ingredients")
+        val mealDirections = intent.getStringArrayListExtra("meal_directions")
 
         val titleTV = findViewById<TextView>(R.id.foodName)
         val kcalTV = findViewById<TextView>(R.id.caloriesValue)
@@ -83,7 +73,7 @@ class RecipeDetailActivity : AppCompatActivity() {
         val startCookingButton = findViewById<Button>(R.id.startCookingButton)
         startCookingButton.setOnClickListener {
             val intent = Intent(this, InstructionsActivity::class.java)
-            intent.putExtra("meal_title", mealTitle)
+            intent.putStringArrayListExtra("meal_directions", mealDirections)
             startActivity(intent)
         }
     }

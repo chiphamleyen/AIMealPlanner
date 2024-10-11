@@ -127,6 +127,7 @@
 
             <!-- Avo Smash w/Halloumi -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/meal1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -188,6 +189,7 @@
 
             <!-- Buddha Bowl w/Chicken -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/meal2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -250,6 +252,7 @@
 
             <!-- Spaghetti Bolognese -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/meal3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

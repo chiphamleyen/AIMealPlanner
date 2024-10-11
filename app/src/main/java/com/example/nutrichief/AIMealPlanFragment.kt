@@ -14,7 +14,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import com.example.nutrichief.datamodels.Meal
+import com.example.nutrichief.view.RecipeDetailActivity
 import com.example.nutrichief.view.UserProfileActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -53,6 +55,10 @@ class AIMealPlanFragment : Fragment() {
 
     private lateinit var regenerateButton: Button
 
+    private lateinit var mealCard1: CardView
+    private lateinit var mealCard2: CardView
+    private lateinit var mealCard3: CardView
+
     // Constants for SharedPreferences keys
     private val MEAL_PLAN_KEY = "meal_plan"
     private val LAST_FETCH_DATE_KEY = "last_fetch_date"
@@ -79,6 +85,9 @@ class AIMealPlanFragment : Fragment() {
         mealTitle2 = view.findViewById(R.id.meal_title_2)
         mealTitle3 = view.findViewById(R.id.meal_title_3)
         regenerateButton = view.findViewById(R.id.regenerate_button)
+        mealCard1 = view.findViewById(R.id.meal1)
+        mealCard2 = view.findViewById(R.id.meal2)
+        mealCard3 = view.findViewById(R.id.meal3)
 
         val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE) ?: return view
 
@@ -118,7 +127,28 @@ class AIMealPlanFragment : Fragment() {
             mealTitle1.text = meals[0].title
             mealTitle2.text = meals[1].title
             mealTitle3.text = meals[2].title
+
+            // Set onClickListener for each meal
+            mealCard1.setOnClickListener {
+                openRecipeDetailActivity(meals[0])
+            }
+            mealCard2.setOnClickListener {
+                openRecipeDetailActivity(meals[1])
+            }
+            mealCard3.setOnClickListener {
+                openRecipeDetailActivity(meals[2])
+            }
         }
+    }
+
+    private fun openRecipeDetailActivity(meal: Meal) {
+        val intent = Intent(requireContext(), RecipeDetailActivity::class.java)
+        intent.putExtra("meal_title", meal.title)
+        intent.putExtra("meal_calories", meal.calories)
+        intent.putExtra("meal_protein", meal.protein)
+        intent.putExtra("meal_fat", meal.fat)
+        intent.putExtra("meal_ingredients", ArrayList(meal.ingredients))
+        startActivity(intent)
     }
 
     // Function to check if the stored meal plan is valid for today

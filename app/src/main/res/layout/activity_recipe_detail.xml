@@ -60,10 +60,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="8dp"
                 android:text="Ramen"
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="22sp"
                 android:textAlignment="center"/>
 
             <LinearLayout

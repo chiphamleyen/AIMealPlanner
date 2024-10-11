@@ -58,9 +58,10 @@
                     android:textSize="18sp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/user_ava"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:src="@drawable/ic_email"
+                    android:src="@drawable/av1"
                     android:onClick="profile_click"
                     />
             </LinearLayout>
@@ -112,7 +113,8 @@
                     android:layout_height="1dp"
                     android:layout_weight="1" />
 
-                <TextView
+                <Button
+                    android:id="@+id/regenerate_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/search_bar_background"
@@ -145,6 +147,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/meal_title_1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Avo Smash w/Halloumi"
@@ -206,6 +209,7 @@
                         >
 
                         <TextView
+                            android:id="@+id/meal_title_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Buddha Bowl w/Chicken"
@@ -266,6 +270,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/meal_title_3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Spaghetti Bolognese"

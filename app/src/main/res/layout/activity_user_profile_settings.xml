@@ -16,6 +16,7 @@
         android:paddingVertical="20dp">
 
         <ImageView
+            android:id="@+id/backButton"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:onClick="goBack"
@@ -47,8 +48,6 @@
             android:layout_height="match_parent"
             android:layout_marginTop="35dp"
             android:background="@drawable/top_curve_profile_background" />
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -96,6 +95,8 @@
                             android:drawableStart="@drawable/ic_user"
                             android:drawablePadding="10dp"
                             android:hint="@string/full_name"
+                            android:enabled="true"
+                            android:focusable="true"
                             android:inputType="text" />
 
                     </com.google.android.material.textfield.TextInputLayout>

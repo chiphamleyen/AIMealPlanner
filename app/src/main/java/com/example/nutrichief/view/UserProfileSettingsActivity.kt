@@ -14,6 +14,7 @@ import com.example.nutrichief.datamodels.UserProfileEdit
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -24,9 +25,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
+import java.util.Locale
 
 class UserProfileSettingsActivity : AppCompatActivity() {
 
@@ -45,6 +48,11 @@ class UserProfileSettingsActivity : AppCompatActivity() {
 
         val saveBtn = findViewById<Button>(R.id.save_emp_btn)
         genderList = findViewById(R.id.gender)
+
+        val backButton = findViewById<ImageView>(R.id.backButton)
+        backButton.setOnClickListener {
+            finish()
+        }
 
         genderList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -66,52 +74,85 @@ class UserProfileSettingsActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         genderList.adapter = adapter
 
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val jwtToken = sharedPreferences.getString("jwt_token", null)
+
+        if (jwtToken != null) {
+            Log.d("JWT Token", jwtToken)
+        }
+
         // Load user profile
-        loadUserProfile()
+        fetchUserProfile(jwtToken) { user ->
+            user?.let {
+                // Populate user profile data to TextViews
+                findViewById<TextInputEditText>(R.id.fullname).setText(it.name)
+                findViewById<TextInputEditText>(R.id.yearofbirth).setText(formatDate(it.date_of_birth))
+                genderList.setSelection(genders.indexOf(it.gender))
+                findViewById<TextInputEditText>(R.id.height).setText(it.height.toString())
+                findViewById<TextInputEditText>(R.id.weight).setText(it.weight.toString())
+                findViewById<TextInputEditText>(R.id.allergy).setText(it.allergies?.joinToString(", ") ?: "")
+                findViewById<TextInputEditText>(R.id.diet_pref).setText(it.dietary_preferences?.joinToString(", ") ?: "")
+
+            } ?: run {
+                // Handle the case when user is null (error occurred)
+                Toast.makeText(this, "Failed to retrieve user profile", Toast.LENGTH_SHORT).show()
+                Log.e("UserProfile", "Failed to retrieve user profile")
+            }
+        }
+
 
         saveBtn.setOnClickListener {
             saveUserProfile()
         }
     }
 
-    private fun loadUserProfile() {
-        val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val token = sharedPrefs.getString("user_token", null) ?: return
-
-        GlobalScope.launch(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/account/profile")
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    if (response.isSuccessful) {
-                        val responseBody = response.body?.string()
-                        val user: User = jacksonObjectMapper().readValue(responseBody ?: "{}")
-
-                        updateUI(user)
-                    } else {
-                        Log.e("UserProfile", "Failed to load profile: ${response.message}")
-                    }
-                }
-
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.e("UserProfile", "Network error: ${e.message}")
-                }
-            })
+    private fun formatDate(date: Date?): String {
+        return if (date != null) {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            sdf.format(date)
+        } else {
+            ""
         }
     }
 
-    private fun updateUI(user: User) {
-        // Populate UI elements with user data
-        findViewById<TextInputEditText>(R.id.fullname).setText(user.name)
-        findViewById<TextInputEditText>(R.id.yearofbirth).setText(user.date_of_birth.toString())
-        findViewById<TextInputEditText>(R.id.weight).setText(user.weight.toString())
-        findViewById<TextInputEditText>(R.id.height).setText(user.height.toString())
-        genderList.setSelection(genders.indexOf(user.gender))
-        findViewById<TextInputEditText>(R.id.allergy).setText(user.allergies.toString())
-        findViewById<TextInputEditText>(R.id.diet_pref).setText(user.dietary_preferences.toString())
+    private fun fetchUserProfile(token: String?, callback: (User?) -> Unit) {
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                if (token == null) {
+                    callback(null)
+                    return@launch
+                }
+
+                val request = Request.Builder()
+                    .url("http://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/account/profile")
+                    .addHeader("Authorization", "Bearer $token")
+                    .get()
+                    .build()
+
+                val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }
+
+                if (!response.isSuccessful) {
+                    throw IOException("Failed to retrieve user profile")
+                }
+
+                val responseBody = response.body?.string()
+                val resultJson = JSONObject(responseBody ?: "")
+                val errorCode = resultJson.optInt("error_code", -1)
+
+                if (errorCode == 0) {
+                    val data = resultJson.optJSONObject("data")
+
+                    val userObj = jacksonObjectMapper().readValue(data?.toString() ?: "", User::class.java)
+
+                    callback(userObj)
+                } else {
+                    callback(null)
+                }
+            } catch (e: Exception) {
+                callback(null)
+                Log.e("UserProfile", "Failed to retrieve user profile: ${e.message}")
+            }
+        }
     }
 
     private fun saveUserProfile() {
@@ -204,7 +245,4 @@ class UserProfileSettingsActivity : AppCompatActivity() {
         }
     }
 
-    fun goBack(view: View) {
-        onBackPressed()
-    }
 }

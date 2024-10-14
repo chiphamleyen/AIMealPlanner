@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.example.nutrichief.datamodels.Meal
@@ -29,6 +30,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import okio.IOException
 import org.json.JSONArray
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.Date
 import java.util.Locale
 
@@ -59,9 +61,17 @@ class AIMealPlanFragment : Fragment() {
     private lateinit var mealCard2: CardView
     private lateinit var mealCard3: CardView
 
+    //init checkbox and streak variables
+    private lateinit var streakTextView: TextView
+    private lateinit var checkbox1: CheckBox
+    private lateinit var checkbox2: CheckBox
+    private lateinit var checkbox3: CheckBox
+
     // Constants for SharedPreferences keys
     private val MEAL_PLAN_KEY = "meal_plan"
     private val LAST_FETCH_DATE_KEY = "last_fetch_date"
+    private val STREAK_COUNTER_KEY = "streak_counter"
+    private val LAST_CHECKED_TIME_KEY = "last_checked_time"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +99,23 @@ class AIMealPlanFragment : Fragment() {
         mealCard2 = view.findViewById(R.id.meal2)
         mealCard3 = view.findViewById(R.id.meal3)
 
+        streakTextView = view.findViewById(R.id.streakTextView)
+
+        checkbox1 = view.findViewById(R.id.checkbox_meal1)
+        checkbox2 = view.findViewById(R.id.checkbox_meal2)
+        checkbox3 = view.findViewById(R.id.checkbox_meal3)
+
         val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE) ?: return view
+
+        // Initialize checkbox listeners to update streak counter when checkboxes are toggled
+        checkbox1.setOnCheckedChangeListener { _, _ -> updateStreakCounter(sharedPreferences) }
+        checkbox2.setOnCheckedChangeListener { _, _ -> updateStreakCounter(sharedPreferences) }
+        checkbox3.setOnCheckedChangeListener { _, _ -> updateStreakCounter(sharedPreferences) }
+
+        // Update streak TextView when the fragment is created to display the current streak
+        updateStreakTextView(sharedPreferences)
+
+
 
         // Check if the meal plan is up-to-date
         if (isMealPlanUpToDate(sharedPreferences)) {
@@ -230,6 +256,45 @@ class AIMealPlanFragment : Fragment() {
             return meals
         }
         return null
+    }
+    private fun updateStreakCounter(sharedPreferences: SharedPreferences) {
+        val editor = sharedPreferences.edit()
+
+        // Get the last checked time and the current time
+        val lastCheckedTime = sharedPreferences.getLong(LAST_CHECKED_TIME_KEY, 0L)
+        val currentTime = System.currentTimeMillis()
+
+        // Check if any checkboxes are checked
+        val anyCheckboxChecked = checkbox1.isChecked || checkbox2.isChecked || checkbox3.isChecked
+
+        // Calculate the time difference in hours
+        val hoursSinceLastChecked = (currentTime - lastCheckedTime) / (1000 * 60 * 60)
+
+        if (anyCheckboxChecked) {
+            // Update streak if checked within 24 hours
+            if (hoursSinceLastChecked < 24) {
+                val currentStreak = sharedPreferences.getInt(STREAK_COUNTER_KEY, 0)
+                editor.putInt(STREAK_COUNTER_KEY, currentStreak + 1)
+            } else {
+                // Reset streak if more than 24 hours have passed since last check
+                editor.putInt(STREAK_COUNTER_KEY, 1)
+            }
+            // Update the last checked time to current time
+            editor.putLong(LAST_CHECKED_TIME_KEY, currentTime)
+        } else if (hoursSinceLastChecked >= 24) {
+            // Reset streak if no checkbox is checked in the past 24 hours
+            editor.putInt(STREAK_COUNTER_KEY, 0)
+        }
+
+        // Apply the changes and update the streak TextView
+        editor.apply()
+        updateStreakTextView(sharedPreferences)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateStreakTextView(sharedPreferences: SharedPreferences) {
+        val streak = sharedPreferences.getInt(STREAK_COUNTER_KEY, 0)
+        streakTextView.text = "⚡$streak"
     }
 
     private fun getGeneratedMealPlan(

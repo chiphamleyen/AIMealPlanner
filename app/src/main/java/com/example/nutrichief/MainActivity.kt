@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     private val aiMealPlanFragment = AIMealPlanFragment()
     private val searchFragment = SearchFragment()
     private val communityFragment = CommunityFragment()
-    private val orderFragment = OrderFragment()
+    private val chatAIFragment = ChatAIFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
                 replaceFragment(this.communityFragment)
             }
             R.id.nav_item_collection -> {
-                replaceFragment(this.orderFragment)
+                replaceFragment(this.chatAIFragment)
             }
         }
         return true

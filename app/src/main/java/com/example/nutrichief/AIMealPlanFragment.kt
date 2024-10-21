@@ -18,6 +18,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.FragmentTransaction
 import com.example.nutrichief.datamodels.Meal
@@ -54,8 +55,6 @@ class AIMealPlanFragment : Fragment() {
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 
-    private var mealList = mutableListOf<Meal>()
-
     private lateinit var mealTitle1: TextView
     private lateinit var mealTitle2: TextView
     private lateinit var mealTitle3: TextView
@@ -65,6 +64,10 @@ class AIMealPlanFragment : Fragment() {
     private lateinit var mealCard1: CardView
     private lateinit var mealCard2: CardView
     private lateinit var mealCard3: CardView
+
+    private lateinit var mealButton1: Button
+    private lateinit var mealButton2: Button
+    private lateinit var mealButton3: Button
 
     //init checkbox and streak variables
     private lateinit var streakTextView: TextView
@@ -76,6 +79,8 @@ class AIMealPlanFragment : Fragment() {
     private lateinit var chatbox: LinearLayout
     private lateinit var editText: EditText
     private lateinit var sendButton: ImageButton
+
+    private lateinit var mealGenContainer: LinearLayout
 
     // Constants for SharedPreferences keys
     private val MEAL_PLAN_KEY = "meal_plan"
@@ -109,6 +114,10 @@ class AIMealPlanFragment : Fragment() {
         mealCard2 = view.findViewById(R.id.meal2)
         mealCard3 = view.findViewById(R.id.meal3)
 
+        mealButton1 = view.findViewById(R.id.meal_details_button1)
+        mealButton2 = view.findViewById(R.id.meal_details_button2)
+        mealButton3 = view.findViewById(R.id.meal_details_button3)
+
         streakTextView = view.findViewById(R.id.streakTextView)
 
         checkbox1 = view.findViewById(R.id.checkbox_meal1)
@@ -116,6 +125,8 @@ class AIMealPlanFragment : Fragment() {
         checkbox3 = view.findViewById(R.id.checkbox_meal3)
 
         chatbox = view.findViewById(R.id.chatbox)
+
+        mealGenContainer = view.findViewById(R.id.meal_gen_container)
 
         val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE) ?: return view
 
@@ -158,6 +169,7 @@ class AIMealPlanFragment : Fragment() {
             }
         }
 
+        displaySavedMeals()
 
         // Check if the meal plan is up-to-date
         if (isMealPlanUpToDate(sharedPreferences)) {
@@ -198,13 +210,13 @@ class AIMealPlanFragment : Fragment() {
             mealTitle3.text = meals[2].title
 
             // Set onClickListener for each meal
-            mealCard1.setOnClickListener {
+            mealButton1.setOnClickListener {
                 openRecipeDetailActivity(meals[0])
             }
-            mealCard2.setOnClickListener {
+            mealButton2.setOnClickListener {
                 openRecipeDetailActivity(meals[1])
             }
-            mealCard3.setOnClickListener {
+            mealButton3.setOnClickListener {
                 openRecipeDetailActivity(meals[2])
             }
         }
@@ -340,6 +352,71 @@ class AIMealPlanFragment : Fragment() {
         val streak = sharedPreferences.getInt(STREAK_COUNTER_KEY, 0)
         streakTextView.text = "⚡$streak"
     }
+
+    private fun loadSavedMeals(): List<Meal> {
+        val sharedPreferences = requireContext().getSharedPreferences("MealPrefs", Context.MODE_PRIVATE)
+        val mealListJson = sharedPreferences.getString("saved_meals", "[]")
+        val mealList = JSONArray(mealListJson)
+
+        val savedMeals = mutableListOf<Meal>()
+
+        for (i in 0 until mealList.length()) {
+            val mealJson = mealList.getJSONObject(i)
+
+            val meal = Meal(
+                title = mealJson.getString("title"),
+                ingredients = List(mealJson.getJSONArray("ingredients").length()) {
+                    mealJson.getJSONArray("ingredients").getString(it)
+                },
+                directions = List(mealJson.getJSONArray("directions").length()) {
+                    mealJson.getJSONArray("directions").getString(it)
+                },
+                calories = mealJson.optDouble("calories", 0.0),
+                fat = mealJson.optDouble("fat", 0.0),
+                protein = mealJson.optDouble("protein", 0.0),
+                sodium = mealJson.optDouble("sodium", 0.0),
+                rating = mealJson.optDouble("rating", 0.0),
+                categories = List(mealJson.getJSONArray("categories").length()) {
+                    mealJson.getJSONArray("categories").getString(it)
+                }
+            )
+
+            savedMeals.add(meal)
+        }
+
+        return savedMeals
+    }
+
+    private fun displaySavedMeals() {
+        val savedMeals = loadSavedMeals()
+
+        if (savedMeals.isNotEmpty()) {
+            for (meal in savedMeals) {
+                val mealCardView = LayoutInflater.from(context).inflate(R.layout.meal_card_main, mealGenContainer, false)
+
+                // Set margin để tạo khoảng cách giữa các card
+                val layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                layoutParams.setMargins(0, 50, 0, 0)
+                mealCardView.layoutParams = layoutParams
+
+                val mealTitle = mealCardView.findViewById<TextView>(R.id.meal_title)
+                mealTitle.text = meal.title
+
+                val detailsButton = mealCardView.findViewById<Button>(R.id.meal_details_button)
+                detailsButton.setOnClickListener {
+                    openRecipeDetailActivity(meal)
+                }
+
+                mealGenContainer.addView(mealCardView)
+            }
+        } else {
+            Toast.makeText(requireContext(), "No saved meals found", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     private fun getGeneratedMealPlan(
         token: String?,

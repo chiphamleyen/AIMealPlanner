@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AIMealPlanFragment">
+    tools:context=".AIMealPlanFragment"
+    android:id="@+id/fragment_container">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -12,6 +13,7 @@
         android:background="#FFFFFF">
 
         <LinearLayout
+            android:id="@+id/meal_gen_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -67,6 +69,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/chatbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -74,16 +77,20 @@
                 android:orientation="horizontal"
                 android:padding="12dp">
 
-                <EditText
+                <TextView
+                    android:id="@+id/chatbox_edittext"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="How may I help you today?"
-                    android:textColorHint="#888888"
-                    android:fontFamily="@font/montserrat_regular" />
+                    android:fontFamily="@font/montserrat_regular"
+                    android:layout_marginTop="5dp"
+                    android:textSize="18dp"
+                    android:hint="Hi, how can I help you today?"
+                    android:textColorHint="#888888" />
 
                 <ImageButton
+                    android:id="@+id/chatbox_send_button"
                     android:layout_width="44dp"
                     android:layout_height="34dp"
                     android:background="?attr/selectableItemBackground"
@@ -117,7 +124,7 @@
                     android:id="@+id/regenerate_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/search_bar_background"
+                    android:background="@drawable/search_bar_background_purple"
                     android:text="Regenerate"
                     android:onClick="regenerate_click"
                     android:textSize="16sp"
@@ -156,20 +163,21 @@
                             android:textStyle="bold"
                             android:fontFamily="@font/montserrat_bold" />
 
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Details"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/montserrat_regular" />
-                        <!-- Added Checkbox here -->
                         <CheckBox
                             android:id="@+id/checkbox_meal1"
                             android:layout_width="100dp"
                             android:layout_height="20dp"
+                            android:layout_marginTop="10dp"
                             android:fontFamily="@font/montserrat_regular"
                             android:text="Done" />
+
+                        <Button
+                            android:id="@+id/meal_details_button1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Start Cooking"
+                            android:layout_marginTop="8dp" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -190,6 +198,15 @@
                             android:text="Breakfast"
                             android:textSize="14sp"
                             android:fontFamily="@font/montserrat_regular" />
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="@string/age"
+                            android:src="@drawable/ic_share"
+                            app:tint="@color/purple_theme_color"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -226,20 +243,20 @@
                             android:textStyle="bold"
                             android:fontFamily="@font/montserrat_bold" />
 
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Details"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/montserrat_regular" />
-                        <!-- Added Checkbox here -->
                         <CheckBox
                             android:id="@+id/checkbox_meal2"
                             android:layout_width="100dp"
                             android:layout_height="20dp"
+                            android:layout_marginTop="10dp"
                             android:fontFamily="@font/montserrat_regular"
                             android:text="Done" />
+
+                        <Button
+                            android:id="@+id/meal_details_button2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Start Cooking"
+                            android:layout_marginTop="8dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -260,6 +277,15 @@
                             android:text="Lunch"
                             android:textSize="14sp"
                             android:fontFamily="@font/montserrat_regular" />
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="@string/age"
+                            android:src="@drawable/ic_share"
+                            app:tint="@color/purple_theme_color"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -295,20 +321,20 @@
                             android:textStyle="bold"
                             android:fontFamily="@font/montserrat_bold" />
 
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Details"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/montserrat_regular" />
-                        <!-- Added Checkbox here -->
                         <CheckBox
                             android:id="@+id/checkbox_meal3"
                             android:layout_width="100dp"
                             android:layout_height="20dp"
+                            android:layout_marginTop="10dp"
                             android:fontFamily="@font/montserrat_regular"
                             android:text="Done" />
+
+                        <Button
+                            android:id="@+id/meal_details_button3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Start Cooking"
+                            android:layout_marginTop="8dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -329,6 +355,15 @@
                             android:text="Dinner"
                             android:textSize="14sp"
                             android:fontFamily="@font/montserrat_regular" />
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="@string/age"
+                            android:src="@drawable/ic_share"
+                            app:tint="@color/purple_theme_color"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

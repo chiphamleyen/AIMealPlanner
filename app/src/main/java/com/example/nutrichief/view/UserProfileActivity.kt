@@ -96,7 +96,7 @@ class UserProfileActivity : AppCompatActivity() {
                 }
 
                 val request = Request.Builder()
-                    .url("http://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/account/profile")
+                    .url("http://mealplanner2.f5cda3hmgmgbb7ba.australiaeast.azurecontainer.io/api/v1/account/profile")
                     .addHeader("Authorization", "Bearer $token")
                     .get()
                     .build()

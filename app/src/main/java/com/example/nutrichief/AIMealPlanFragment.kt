@@ -14,11 +14,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.FragmentTransaction
 import com.example.nutrichief.datamodels.Meal
 import com.example.nutrichief.view.RecipeDetailActivity
 import com.example.nutrichief.view.UserProfileActivity
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -67,6 +72,11 @@ class AIMealPlanFragment : Fragment() {
     private lateinit var checkbox2: CheckBox
     private lateinit var checkbox3: CheckBox
 
+    // chatbox
+    private lateinit var chatbox: LinearLayout
+    private lateinit var editText: EditText
+    private lateinit var sendButton: ImageButton
+
     // Constants for SharedPreferences keys
     private val MEAL_PLAN_KEY = "meal_plan"
     private val LAST_FETCH_DATE_KEY = "last_fetch_date"
@@ -105,6 +115,8 @@ class AIMealPlanFragment : Fragment() {
         checkbox2 = view.findViewById(R.id.checkbox_meal2)
         checkbox3 = view.findViewById(R.id.checkbox_meal3)
 
+        chatbox = view.findViewById(R.id.chatbox)
+
         val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE) ?: return view
 
         // Initialize checkbox listeners to update streak counter when checkboxes are toggled
@@ -115,6 +127,36 @@ class AIMealPlanFragment : Fragment() {
         // Update streak TextView when the fragment is created to display the current streak
         updateStreakTextView(sharedPreferences)
 
+        editText = view.findViewById(R.id.chatbox_edittext)
+        sendButton = view.findViewById(R.id.chatbox_send_button)
+
+        sendButton.setOnClickListener {
+            val userMessage = editText.text.toString()
+
+            if (userMessage.isNotEmpty()) {
+                // Create a bundle to pass the message
+                val bundle = Bundle()
+                bundle.putString("userMessage", userMessage)
+
+                // Create an instance of ChatAIFragment
+                val chatAIFragment = ChatAIFragment()
+                chatAIFragment.arguments = bundle
+
+                // Get the current fragment (AIMealPlanFragment)
+                val currentFragment = parentFragmentManager.findFragmentById(R.id.fragment_container) as? AIMealPlanFragment
+
+                if (currentFragment != null) {
+                    // Hide AIMealPlanFragment
+                    currentFragment.view?.visibility = View.GONE // Ẩn AIMealPlanFragment
+
+                    // Add ChatAIFragment
+                    parentFragmentManager.beginTransaction()
+                        .add(R.id.fragment_container, chatAIFragment)
+                        .addToBackStack(null) // Optional, if you want to navigate back
+                        .commit()
+                }
+            }
+        }
 
 
         // Check if the meal plan is up-to-date
@@ -136,6 +178,7 @@ class AIMealPlanFragment : Fragment() {
 
         regenerateButton.setOnClickListener {
             regenerateMeal(sharedPreferences)
+
         }
 
         val imageUserAva = view.findViewById<ImageView>(R.id.user_ava)
@@ -191,8 +234,9 @@ class AIMealPlanFragment : Fragment() {
         val jwtToken = sharedPreferences.getString("jwt_token", null)
         getGeneratedMealPlan(jwtToken) { meals ->
             if (meals != null) {
-                saveMealPlanToLocal(sharedPreferences, meals) // Lưu meal mới vào SharedPreferences
-                updateMealPlan(meals) // Cập nhật UI với meal mới
+                saveMealPlanToLocal(sharedPreferences, meals)
+                updateMealPlan(meals)
+                Log.d("regenerated meal", meals.toString())
             }
         }
     }
@@ -303,10 +347,8 @@ class AIMealPlanFragment : Fragment() {
     ) {
         GlobalScope.launch(Dispatchers.Main) {
             try {
-                val requestBody = JSONObject()
-
                 val request = Request.Builder()
-                    .url("http://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/suggestions/without_llm")
+                    .url("http://mealplanner2.f5cda3hmgmgbb7ba.australiaeast.azurecontainer.io/api/v1/suggestions/with_llm")
                     .addHeader("Authorization", "Bearer $token")
                     .get()
                     .build()

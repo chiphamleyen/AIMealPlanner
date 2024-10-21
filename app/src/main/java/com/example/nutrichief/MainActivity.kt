@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import com.example.nutrichief.model.Meal
 import com.example.nutrichief.view.CommunityFragment
+import com.example.nutrichief.view.MealCalendarFragment
 import com.example.nutrichief.view.OrderFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
@@ -17,7 +18,8 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     @SuppressLint("MissingInflatedId")
 //    private lateinit var mealPlanFragment: MealPlanFragment
     private val aiMealPlanFragment = AIMealPlanFragment()
-    private val searchFragment = SearchFragment()
+//    private val searchFragment = SearchFragment()
+    private val mealCalendar = MealCalendarFragment()
     private val communityFragment = CommunityFragment()
     private val chatAIFragment = ChatAIFragment()
 
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
                 replaceFragment(aiMealPlanFragment)
             }
             R.id.nav_item_search -> {
-                replaceFragment(this.searchFragment)
+                replaceFragment(this.mealCalendar)
             }
             R.id.nav_item_community -> {
                 replaceFragment(this.communityFragment)

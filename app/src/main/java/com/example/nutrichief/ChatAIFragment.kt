@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -117,6 +118,9 @@ class ChatAIFragment : Fragment() {
 
         // Add the message to the chat container
         chatContainer.addView(textView)
+
+        // Scroll to the bottom after adding a new message
+        scrollToBottom()
     }
 
 
@@ -168,6 +172,9 @@ class ChatAIFragment : Fragment() {
                     handleBotDetailMessage(detailedMessage)  // Add detailed bot message
                 }
             }
+
+            // Scroll to the bottom after loading all history
+            scrollToBottom()
         }
 
 
@@ -267,7 +274,6 @@ class ChatAIFragment : Fragment() {
             Toast.makeText(requireContext(), "Meal added!", Toast.LENGTH_SHORT).show()
         }
 
-
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             Log.e("WebSocket", "Error: ${t.message}")
         }
@@ -275,6 +281,14 @@ class ChatAIFragment : Fragment() {
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             webSocket.close(1000, null)
             Log.d("WebSocket", "Closed: $reason")
+        }
+    }
+
+    // Scroll to the bottom of the chat container
+    private fun scrollToBottom() {
+        val scrollView = view?.findViewById<ScrollView>(R.id.chat_scroll_view)
+        scrollView?.post {
+            scrollView.fullScroll(View.FOCUS_DOWN)
         }
     }
 

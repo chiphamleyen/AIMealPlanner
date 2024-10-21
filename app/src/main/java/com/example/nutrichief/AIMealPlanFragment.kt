@@ -131,9 +131,17 @@ class AIMealPlanFragment : Fragment() {
         val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE) ?: return view
 
         // Initialize checkbox listeners to update streak counter when checkboxes are toggled
-        checkbox1.setOnCheckedChangeListener { _, _ -> updateStreakCounter(sharedPreferences) }
-        checkbox2.setOnCheckedChangeListener { _, _ -> updateStreakCounter(sharedPreferences) }
-        checkbox3.setOnCheckedChangeListener { _, _ -> updateStreakCounter(sharedPreferences) }
+        checkbox1.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) updateStreakCounter(sharedPreferences)
+        }
+
+        checkbox2.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) updateStreakCounter(sharedPreferences)
+        }
+
+        checkbox3.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) updateStreakCounter(sharedPreferences)
+        }
 
         // Update streak TextView when the fragment is created to display the current streak
         updateStreakTextView(sharedPreferences)
@@ -326,20 +334,15 @@ class AIMealPlanFragment : Fragment() {
         // Calculate the time difference in hours
         val hoursSinceLastChecked = (currentTime - lastCheckedTime) / (1000 * 60 * 60)
 
-        if (anyCheckboxChecked) {
-            // Update streak if checked within 24 hours
-            if (hoursSinceLastChecked < 24) {
-                val currentStreak = sharedPreferences.getInt(STREAK_COUNTER_KEY, 0)
-                editor.putInt(STREAK_COUNTER_KEY, currentStreak + 1)
-            } else {
-                // Reset streak if more than 24 hours have passed since last check
-                editor.putInt(STREAK_COUNTER_KEY, 1)
-            }
-            // Update the last checked time to current time
+        // Only update streak if checkboxes are checked and 24 hours have passed since last update
+        if (anyCheckboxChecked && hoursSinceLastChecked >= 24) {
+            val currentStreak = sharedPreferences.getInt(STREAK_COUNTER_KEY, 0)
+            editor.putInt(STREAK_COUNTER_KEY, currentStreak + 1)
             editor.putLong(LAST_CHECKED_TIME_KEY, currentTime)
-        } else if (hoursSinceLastChecked >= 24) {
+        } else if (!anyCheckboxChecked && hoursSinceLastChecked >= 24) {
             // Reset streak if no checkbox is checked in the past 24 hours
             editor.putInt(STREAK_COUNTER_KEY, 0)
+            editor.putLong(LAST_CHECKED_TIME_KEY, currentTime)
         }
 
         // Apply the changes and update the streak TextView

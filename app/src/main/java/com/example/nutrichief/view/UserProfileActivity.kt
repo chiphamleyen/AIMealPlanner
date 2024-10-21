@@ -1,6 +1,5 @@
 package com.example.nutrichief.view
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -17,18 +16,20 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import java.io.IOException
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Date
 
 class UserProfileActivity : AppCompatActivity() {
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
-    private var actLevelString : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,62 +41,40 @@ class UserProfileActivity : AppCompatActivity() {
         val age = findViewById<TextView>(R.id.profile_age)
         val height = findViewById<TextView>(R.id.profile_height)
         val weight = findViewById<TextView>(R.id.profile_weight)
-        val actLevel = findViewById<TextView>(R.id.profile_activityLevel)
-        val bmi = findViewById<TextView>(R.id.profile_bmi)
-        val tdee = findViewById<TextView>(R.id.profile_tdee)
+        val allergy = findViewById<TextView>(R.id.profile_allergy)
+        val diet_pref = findViewById<TextView>(R.id.profile_diet_pref)
         val update = findViewById<ImageView>(R.id.update_profile)
         val currentOrderBtn = findViewById<ImageView>(R.id.current_order)
 
         update.setOnClickListener {
-            startActivity( Intent(this, UserProfileSettingsActivity::class.java) )
+            startActivity(Intent(this, UserProfileSettingsActivity::class.java))
             finish()
         }
 
         currentOrderBtn.setOnClickListener {
-            startActivity( Intent(this, CurrentOrderActivity::class.java) )
+            startActivity(Intent(this, CurrentOrderActivity::class.java))
             finish()
         }
 
-//        val userEmail = "chie.bow.gu@gmail.com"
-        val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val userEmail = sharedPrefs.getString("user_email", "") ?: ""
-        val userId = sharedPrefs.getInt("user_id", 0)
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val jwtToken = sharedPreferences.getString("jwt_token", null)
 
-        fetchUserProfile(userId) { user ->
+        if (jwtToken != null) {
+            Log.d("JWT Token", jwtToken)
+        }
+
+        fetchUserProfile(jwtToken) { user ->
             user?.let {
                 // Populate user profile data to TextViews
-                fullName.text = it.user_name
-                email.text = it.user_email
-
-                var genderProfile = if (it.user_gender == 0) "Female" else "Male"
-                gender.text = genderProfile
-                val userBirth = it.user_year_of_birth
-                val currentYear = LocalDate.now().year
-                if (userBirth != null) {
-                    age.text = (currentYear - userBirth.toInt()).toString()
-                }
-                height.text = "${it.user_height} cm"
-                weight.text = "${it.user_weight} kg"
-
-                var actLevelProfile = it.user_activity_level
-                if (actLevelProfile != null) {
-                    if (actLevelProfile.toInt() == 1) {
-                        actLevelString = "Sedentary"
-                    } else if (actLevelProfile.toInt() == 2) {
-                        actLevelString = "Lightly active"
-                    } else if (actLevelProfile.toInt() == 3) {
-                        actLevelString = "Moderately active"
-                    } else if (actLevelProfile.toInt() == 4) {
-                        actLevelString = "Very active"
-                    } else if (actLevelProfile.toInt() == 5) {
-                        actLevelString = "Super active"
-                    }
-                }
-
-                actLevel.text = actLevelString
-                bmi.text = it.user_bmi.toString() + it.user_bmi?.let { it1 -> bmiRate(it1) }
-                tdee.text = it.user_tdee.toString() + " calories per day"
-
+                fullName.text = it.name
+                email.text = it.email
+                gender.text = it.gender
+                val ageValue = calculateAge(it.date_of_birth)
+                age.text = "$ageValue years old"
+                height.text = "${it.height} cm"
+                weight.text = "${it.weight} kg"
+                allergy.text = it.allergies?.joinToString(", ") ?: "No allergies"
+                diet_pref.text = it.dietary_preferences?.joinToString(", ") ?: "No diet preferences"
             } ?: run {
                 // Handle the case when user is null (error occurred)
                 Toast.makeText(this, "Failed to retrieve user profile", Toast.LENGTH_SHORT).show()
@@ -104,17 +83,22 @@ class UserProfileActivity : AppCompatActivity() {
         }
     }
 
-    fun goBack(view: View) { onBackPressed() }
+    fun goBack(view: View) {
+        onBackPressed()
+    }
 
-    private fun fetchUserProfile(userId: Int, callback: (User?) -> Unit) {
+    private fun fetchUserProfile(token: String?, callback: (User?) -> Unit) {
         GlobalScope.launch(Dispatchers.Main) {
             try {
-                val requestBody = JSONObject()
-                requestBody.put("user_id", userId)
+                if (token == null) {
+                    callback(null)
+                    return@launch
+                }
 
                 val request = Request.Builder()
-                    .url("http://10.0.2.2:8001/apis/user/get")
-                    .post(RequestBody.create("application/json".toMediaTypeOrNull(), requestBody.toString()))
+                    .url("http://mealplanner2.f5cda3hmgmgbb7ba.australiaeast.azurecontainer.io/api/v1/account/profile")
+                    .addHeader("Authorization", "Bearer $token")
+                    .get()
                     .build()
 
                 val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }
@@ -125,28 +109,29 @@ class UserProfileActivity : AppCompatActivity() {
 
                 val responseBody = response.body?.string()
                 val resultJson = JSONObject(responseBody ?: "")
-                val status = resultJson.optInt("status", 0)
+                val errorCode = resultJson.optInt("error_code", -1)
 
-                if (status == 1) {
-                    val data = resultJson.optJSONArray("data")
-                    val user = data?.optJSONObject(0)
-                    val userObj = jacksonObjectMapper().readValue(user?.toString() ?: "", User::class.java)
+                if (errorCode == 0) {
+                    val data = resultJson.optJSONObject("data")
+
+                    val userObj = jacksonObjectMapper().readValue(data?.toString() ?: "", User::class.java)
+
                     callback(userObj)
                 } else {
                     callback(null)
                 }
             } catch (e: Exception) {
-                // Handle the error here
                 callback(null)
                 Log.e("UserProfile", "Failed to retrieve user profile: ${e.message}")
             }
         }
     }
 
-    private fun bmiRate (bmi : Float) : String {
-        if (bmi < 18.5 ) return  " Underweight"
-        else if (bmi in 18.5..25.0) return " Healthy"
-        else if (bmi in 25.0..30.0) return " Overweight"
-        else return  " Obesity"
+    fun calculateAge(dateOfBirth: Date?): Int {
+        val birthDate = dateOfBirth?.toInstant()
+            ?.atZone(ZoneId.systemDefault())
+            ?.toLocalDate()
+        val currentDate = LocalDate.now()
+        return ChronoUnit.YEARS.between(birthDate, currentDate).toInt()
     }
 }

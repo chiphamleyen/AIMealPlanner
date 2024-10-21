@@ -42,126 +42,115 @@
                 android:layout_gravity="center"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/register_full_name_til"
+                android:id="@+id/register_weight_til"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/fullname"
+                    android:id="@+id/weight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_user"
+                    android:drawableStart="@drawable/ic_weight_custom"
                     android:drawablePadding="10dp"
-                    android:hint="@string/full_name"
+                    android:hint="@string/weight"
                     android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/register_email_til"
+                android:id="@+id/register_height_til"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/email"
+                    android:id="@+id/height"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_email"
+                    android:drawableStart="@drawable/ic_height_custom"
                     android:drawablePadding="10dp"
-                    android:hint="@string/e_mail"
+                    android:hint="@string/height"
                     android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/register_year_of_birth_til"
+                android:id="@+id/register_allergy_til"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/dateofbirth"
+                    android:id="@+id/allergy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_age_custom"
+                    android:drawableStart="@drawable/baseline_fastfood_24"
                     android:drawablePadding="10dp"
-                    android:hint="@string/date_of_birth"
-                    android:inputType="date" />
+                    android:hint="@string/allergy"
+                    android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:id="@+id/register_gender_til"-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/register_pref_til"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorEnabled="true"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/diet_pref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/baseline_favorite_border_24"
+                    android:drawablePadding="10dp"
+                    android:hint="@string/preference"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:id="@+id/edit_profile_actLevel"-->
 <!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:errorEnabled="true"-->
-<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
+<!--                android:background="@drawable/layout_border"-->
+<!--                android:layout_height="59dp">-->
 
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:id="@+id/gender"-->
-<!--                    android:layout_width="match_parent"-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/imageView2"-->
+<!--                    android:layout_width="30dp"-->
+<!--                    android:layout_height="30dp"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:contentDescription="@string/activity_level"-->
+<!--                    android:src="@drawable/ic_act_level_custom"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0.551" />-->
+
+<!--                <Spinner-->
+<!--                    android:id="@+id/activeLevel"-->
+<!--                    android:layout_width="wrap_content"-->
 <!--                    android:layout_height="wrap_content"-->
-<!--                    android:drawableStart="@drawable/ic_gender"-->
-<!--                    android:drawablePadding="10dp"-->
-<!--                    android:hint="@string/gender"-->
-<!--                    android:inputType="text" />-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintHorizontal_bias="0.028"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/imageView2"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0.457" />-->
 
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/edit_profile_gender"
-                android:layout_width="match_parent"
-                android:background="@drawable/layout_border"
-                android:layout_marginBottom="10dp"
-                android:layout_height="61dp">
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/gender"
-                    android:src="@drawable/ic_gender"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.516" />
-
-                <Spinner
-                    android:id="@+id/gender"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.032"
-                    app:layout_constraintStart_toEndOf="@+id/imageView"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.486" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/register_pwd_til"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:errorEnabled="true"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/pwd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/baseline_password_24"
-                    android:drawablePadding="10dp"
-                    android:hint="@string/password"
-                    android:inputType="textPassword" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+<!--            <CheckBox-->
+<!--                android:id="@+id/register_agree_check_box"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/i_agree_to_the_terms_conditions"-->
+<!--                android:textSize="14sp"-->
+<!--                android:fontFamily="@font/montserrat_regular"/>-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -169,23 +158,16 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/next_emp_btn"
+                    android:id="@+id/register_emp_btn"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:text="@string/next"
+                    android:text="@string/register"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:enabled="true"/>
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/signInTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:text="Already have account? Sign up" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

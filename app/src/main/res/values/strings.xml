@@ -10,7 +10,7 @@
     <string name="full_name">Full Name</string>
     <string name="i_agree_to_the_terms_conditions"><![CDATA[I agree to the Terms & Conditions]]></string>
     <string name="register">Register</string>
-    <string name="year_of_birth">Year of Birth</string>
+    <string name="date_of_birth">yyyy-MM-dd</string>
     <string name="gender">Gender</string>
     <string name="weight">Weight</string>
     <string name="height">Height</string>
@@ -73,5 +73,10 @@
     <string name="confirm_payment">Confirm Payment</string>
     <string name="seems_like_you_have_not_ordered_anything">Seems like you have not ordered anything</string>
     <string name="my_orders">My Orders</string>
+    <string name="allergy">Allergy</string>
+    <string name="preference">Dietary Preference</string>
+    <string name="password">Password</string>
+    <string name="next">Next</string>
+    <string name="login_account_title">Login</string>
 
 </resources>

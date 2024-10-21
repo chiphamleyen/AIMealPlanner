@@ -10,19 +10,26 @@ import android.view.View
 import android.widget.*
 import com.example.nutrichief.R
 import com.example.nutrichief.datamodels.User
+import com.example.nutrichief.datamodels.UserProfileEdit
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
+import java.util.Locale
 
 class UserProfileSettingsActivity : AppCompatActivity() {
 
@@ -30,21 +37,23 @@ class UserProfileSettingsActivity : AppCompatActivity() {
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 
-    private var actLevelInt: Int? = null
     private lateinit var genderList: Spinner
     private var selectedGender: String? = null
     private val genders = arrayOf("Male", "Female")
-
-    private lateinit var activeLevelList: Spinner
-    private var selectedActiveLevel: String? = null
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile_settings)
-        val saveBtn = findViewById<Button>(R.id.save_emp_btn)
 
+        val saveBtn = findViewById<Button>(R.id.save_emp_btn)
         genderList = findViewById(R.id.gender)
+
+        val backButton = findViewById<ImageView>(R.id.backButton)
+        backButton.setOnClickListener {
+            finish()
+        }
+
         genderList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -62,175 +71,164 @@ class UserProfileSettingsActivity : AppCompatActivity() {
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, genders)
-
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        // Apply the adapter to the spinner
         genderList.adapter = adapter
 
-        activeLevelList = findViewById(R.id.activeLevel)
-        activeLevelList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedActiveLevel = parent?.getItemAtPosition(position) as? String
-            }
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val jwtToken = sharedPreferences.getString("jwt_token", null)
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedActiveLevel = null
+        if (jwtToken != null) {
+            Log.d("JWT Token", jwtToken)
+        }
+
+        // Load user profile
+        fetchUserProfile(jwtToken) { user ->
+            user?.let {
+                // Populate user profile data to TextViews
+                findViewById<TextInputEditText>(R.id.fullname).setText(it.name)
+                findViewById<TextInputEditText>(R.id.yearofbirth).setText(formatDate(it.date_of_birth))
+                genderList.setSelection(genders.indexOf(it.gender))
+                findViewById<TextInputEditText>(R.id.height).setText(it.height.toString())
+                findViewById<TextInputEditText>(R.id.weight).setText(it.weight.toString())
+                findViewById<TextInputEditText>(R.id.allergy).setText(it.allergies?.joinToString(", ") ?: "")
+                findViewById<TextInputEditText>(R.id.diet_pref).setText(it.dietary_preferences?.joinToString(", ") ?: "")
+
+            } ?: run {
+                // Handle the case when user is null (error occurred)
+                Toast.makeText(this, "Failed to retrieve user profile", Toast.LENGTH_SHORT).show()
+                Log.e("UserProfile", "Failed to retrieve user profile")
             }
         }
 
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter.createFromResource(
-            this,
-            R.array.activeLevel_array, // Replace with your own array resource name
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            activeLevelList.adapter = adapter
-        }
 
         saveBtn.setOnClickListener {
-            val fullName = findViewById<TextInputEditText>(R.id.fullname).text.toString()
-//            val email = findViewById<TextInputEditText>(R.id.email).text.toString()
-            val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-            val email = sharedPrefs.getString("user_email", "") ?: ""
-            val userId = sharedPrefs.getInt("user_id", 0)
-//            val userId = 1
+            saveUserProfile()
+        }
+    }
 
-            val yearOfBirthText = findViewById<TextInputEditText>(R.id.yearofbirth).text.toString()
-            val gender = selectedGender.toString()
+    private fun formatDate(date: Date?): String {
+        return if (date != null) {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            sdf.format(date)
+        } else {
+            ""
+        }
+    }
 
-
-            val weightText = findViewById<TextInputEditText>(R.id.weight).text.toString()
-            val heightText = findViewById<TextInputEditText>(R.id.height).text.toString()
-
-            if (selectedActiveLevel.toString() == "Sedentary") {
-                actLevelInt = 1
-            } else if (selectedActiveLevel.toString() == "Lightly active") {
-                actLevelInt = 2
-            } else if (selectedActiveLevel.toString() == "Moderately active") {
-                actLevelInt = 3
-            } else if (selectedActiveLevel.toString() == "Very active") {
-                actLevelInt = 4
-            } else if (selectedActiveLevel.toString() == "Super active") {
-                actLevelInt = 5
-            }
-
-            if (fullName.isNotEmpty() && yearOfBirthText.isNotEmpty() &&
-                weightText.isNotEmpty() &&
-                heightText.isNotEmpty()
-            ) {
-                val yearOfBirth = yearOfBirthText.toInt()
-
-
-                val genderInt = if (gender == "Female") 0 else 1
-
-                val height = try {
-                    heightText.toFloatOrNull() ?: 0.0f
-                } catch (e: NumberFormatException) {
-                    return@setOnClickListener
+    private fun fetchUserProfile(token: String?, callback: (User?) -> Unit) {
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                if (token == null) {
+                    callback(null)
+                    return@launch
                 }
 
-                val weight = try {
-                    weightText.toFloatOrNull() ?: 0.0f
-                } catch (e: NumberFormatException) {
-                    return@setOnClickListener
+                val request = Request.Builder()
+                    .url("http://mealplanner2.f5cda3hmgmgbb7ba.australiaeast.azurecontainer.io/api/v1/account/profile")
+                    .addHeader("Authorization", "Bearer $token")
+                    .get()
+                    .build()
+
+                val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }
+
+                if (!response.isSuccessful) {
+                    throw IOException("Failed to retrieve user profile")
                 }
 
-                val user = User(
-                    userId,
-                    fullName,
-                    email,
-                    yearOfBirth,
-                    genderInt,
-                    height,
-                    weight,
-                    actLevelInt,
-                    null,
-                    null
-                )
+                val responseBody = response.body?.string()
+                val resultJson = JSONObject(responseBody ?: "")
+                val errorCode = resultJson.optInt("error_code", -1)
 
-                GlobalScope.launch(Dispatchers.IO) {
+                if (errorCode == 0) {
+                    val data = resultJson.optJSONObject("data")
 
-                    updateUser(user) { response, errorMessage ->
-                        Log.e("confirm", "clicked")
-                        runOnUiThread {
-                            if (response.isSuccessful) {
-                                // Registration successful
-                                Toast.makeText(
-                                    this@UserProfileSettingsActivity,
-                                    "Update Profile Successful",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                val loginIntent = Intent(
-                                    this@UserProfileSettingsActivity,
-                                    UserProfileActivity::class.java
-                                )
-                                startActivity(loginIntent)
-                                finish()
-                            } else {
-                                // Registration failed
-                                if (errorMessage != null) {
-                                    Toast.makeText(
-                                        this@UserProfileSettingsActivity,
-                                        errorMessage,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        this@UserProfileSettingsActivity,
-                                        "Failed to register user",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                }
-                            }
-                        }
-                    }
+                    val userObj = jacksonObjectMapper().readValue(data?.toString() ?: "", User::class.java)
+
+                    callback(userObj)
+                } else {
+                    callback(null)
                 }
-            } else {
-                Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT)
-                    .show()
+            } catch (e: Exception) {
+                callback(null)
+                Log.e("UserProfile", "Failed to retrieve user profile: ${e.message}")
             }
         }
     }
 
-    private fun updateUser(customer: User, callback: (Response, String?) -> Unit) {
+    private fun saveUserProfile() {
+        val fullName = findViewById<TextInputEditText>(R.id.fullname).text.toString()
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val jwtToken = sharedPreferences.getString("jwt_token", null)
 
+        if (jwtToken != null) {
+            Log.d("JWT Token", jwtToken)
+        }
+
+        val yearOfBirthText = findViewById<TextInputEditText>(R.id.yearofbirth).text.toString()
+        val gender = selectedGender.toString()
+        val weightText = findViewById<TextInputEditText>(R.id.weight).text.toString()
+        val heightText = findViewById<TextInputEditText>(R.id.height).text.toString()
+
+        val allergyInput = findViewById<TextInputEditText>(R.id.allergy).text.toString()
+        val allergyList = allergyInput.split(",").map { it.trim() }
+
+        val dietInput = findViewById<TextInputEditText>(R.id.diet_pref).text.toString()
+        val dietList = dietInput.split(",").map { it.trim() }
+
+        // Check if required fields are filled
+        if (fullName.isNotEmpty() && yearOfBirthText.isNotEmpty() &&
+            weightText.isNotEmpty() && heightText.isNotEmpty()
+        ) {
+            val height = heightText.toFloatOrNull() ?: return
+            val weight = weightText.toFloatOrNull() ?: return
+
+            val date = LocalDate.parse(yearOfBirthText)
+            val zonedDateTime = date.atStartOfDay(ZoneId.of("UTC"))
+            val instant = zonedDateTime.toInstant()
+            val dateUtil: Date = Date.from(instant)
+
+            // Create a User object
+            val user = UserProfileEdit(
+                fullName,
+                gender,
+                weight,
+                height,
+                dateUtil,
+                allergyList,
+                dietList,
+                "ID1"
+            )
+
+            // Update user in background thread
+            GlobalScope.launch(Dispatchers.IO) {
+                updateUser(jwtToken, user) { response, errorMessage ->
+                    runOnUiThread {
+                        if (response.isSuccessful) {
+                            Toast.makeText(this@UserProfileSettingsActivity, "Update Profile Successful", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this@UserProfileSettingsActivity, UserProfileActivity::class.java))
+                            finish()
+                        } else {
+                            val message = errorMessage ?: "Failed to register user"
+                            Toast.makeText(this@UserProfileSettingsActivity, message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        } else {
+            Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateUser(token: String?, customer: UserProfileEdit, callback: (Response, String?) -> Unit) {
         try {
             val jsonMediaType = "application/json; charset=utf-8".toMediaType()
-            val requestBody = jacksonObjectMapper().writeValueAsString(customer)
-                .toRequestBody(jsonMediaType)
-
+            val requestBody = jacksonObjectMapper().writeValueAsString(customer).toRequestBody(jsonMediaType)
 
             val request = Request.Builder()
-                .url("http://10.0.2.2:8001/apis/user/update")
-                .post(requestBody)
+                .url("http://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/account/edit")
+                .addHeader("Authorization", "Bearer $token")
+                .put(requestBody)
                 .build()
-
-            val requestBodyUpdateMealPref = JSONObject()
-            requestBodyUpdateMealPref.put("user_id", customer.user_id)
-            requestBodyUpdateMealPref.put("pref_calo", customer.user_tdee)
-            requestBodyUpdateMealPref.put("pref_time", 60)
-            requestBodyUpdateMealPref.put("pref_goal", 0)
-            requestBodyUpdateMealPref.put("pref_date_range", 1)
-
-//            val requestUpdateMealPref =
-//                Request.Builder().url("http://10.0.2.2:8001/apis/mealpref/update").post(
-//                    requestBodyUpdateMealPref.toString()
-//                        .toRequestBody("application/json".toMediaTypeOrNull())
-//                ).build()
-//
-//            client.newCall(requestUpdateMealPref).execute()
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
@@ -239,18 +237,12 @@ class UserProfileSettingsActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
-                    // Handle network failure
                     callback(Response.Builder().code(-1).build(), e.message)
                 }
             })
         } catch (e: Exception) {
-            // Handle other exceptions
-//                callback(Response.Builder().code(-1).build(), e.message)
+            callback(Response.Builder().code(-1).build(), e.message)
         }
-
     }
 
-    fun goBack(view: View) {
-        onBackPressed()
-    }
 }

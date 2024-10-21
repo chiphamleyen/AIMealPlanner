@@ -60,10 +60,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="8dp"
                 android:text="Ramen"
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="22sp"
                 android:textAlignment="center"/>
 
             <LinearLayout
@@ -169,14 +170,16 @@
                         android:id="@+id/imageView7"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_more_horiz_custom"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="3dp"
+                        app:srcCompat="@drawable/baseline_share_24"
                         app:tint="@color/purple_theme_color" />
 
                     <TextView
                         android:id="@+id/textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="More"
+                        android:text="Share"
                         android:textAlignment="center"
                         android:textColor="@color/purple_theme_color" />
 

@@ -1,15 +1,19 @@
 package com.example.nutrichief.view
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.core.content.ContextCompat
 import com.example.nutrichief.R
 import com.example.nutrichief.datamodels.Ingredient
 import com.example.nutrichief.datamodels.RecipeIngredient
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -33,97 +37,111 @@ class InstructionsActivity : AppCompatActivity() {
     private lateinit var recipeQty: TextView
     private lateinit var recipeDesc: TextView
     private var videoPath: String? = null
+    private lateinit var stepContainer: LinearLayout
+    private lateinit var directionsList: List<String>
 
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        .build()
-
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_instructions)
 
         stepNumber = findViewById(R.id.cooking_step)
-        stepNumber.text = "Step $currentPage"
-
-        recipeTitle = findViewById(R.id.recipeTitle)
-        recipeQty = findViewById(R.id.recipeQty)
         recipeDesc = findViewById(R.id.recipeDesc)
-
-        val buttonContainer: LinearLayout = findViewById(R.id.buttonContainer)
-
         previousButton = findViewById(R.id.previousButton)
         nextButton = findViewById(R.id.nextButton)
+
+        stepContainer = findViewById(R.id.buttonContainer)
 
         val videoView = findViewById<VideoView>(R.id.videoView)
         val mediaController = MediaController(this)
 
-        var cookingSteps = mutableListOf<RecipeIngredient>()
-
-        val food_id = intent.getIntExtra("food_id", 1)
-
-        if (videoPath == "") {
+        if (videoPath.isNullOrEmpty()) {
             videoPath = "https://www.shutterstock.com/shutterstock/videos/1009023404/preview/stock-footage-rapidly-chopping-onion-close-up-slow-mothion-red-onions-close-up-female-hands-cut-onions-in.webm"
         }
 
-        getRecipeData(food_id) { recipeIngredients ->
-            recipeIngredients?.let {
-                runOnUiThread {
-                    cookingSteps = it as MutableList<RecipeIngredient>
+        if (!videoPath.isNullOrEmpty()) {
+            mediaController.setAnchorView(videoView)
+            videoView.setMediaController(mediaController)
 
-                    recipeTitle.text = cookingSteps[currentPage - 1].recipe_title
-                    recipeQty.text = cookingSteps[currentPage - 1].recipe_qty.toString() + "g"
-                    recipeDesc.text = cookingSteps[currentPage - 1].recipe_desc
+            videoView.setVideoURI(Uri.parse(videoPath))
 
-                    totalPages = cookingSteps.size
+//            videoView.requestFocus()
+//            videoView.start()
+        } else {
+            Log.e("InstructionsActivity", "Video path is null or empty")
+        }
 
-                    videoPath = cookingSteps[currentPage - 1].media_url
-                    if (videoPath == "") {
-                        videoPath = "https://www.shutterstock.com/shutterstock/videos/1009023404/preview/stock-footage-rapidly-chopping-onion-close-up-slow-mothion-red-onions-close-up-female-hands-cut-onions-in.webm"
-                    }
-                    mediaController.setAnchorView(videoView)
-                    videoView.setMediaController(mediaController)
-                    videoView.setVideoURI(Uri.parse(videoPath))
 
-                    updateButtonVisibility()
+        val directions = intent.getStringArrayListExtra("meal_directions")
+
+        directions?.let {
+            directionsList = it
+            totalPages = directionsList.size
+            createStepButtons(totalPages)
+
+            updateInstruction()
+            highlightCurrentStep(currentPage)
+
+            previousButton.setOnClickListener {
+                if (currentPage > 1) {
+                    currentPage--
+                    updateInstruction()
+                    highlightCurrentStep(currentPage)
                 }
-            } ?: run {
-                // Handle the case when recipeIngredients is null (error occurred)
-                Toast.makeText(this, "Failed to retrieve recipe ingredients", Toast.LENGTH_SHORT)
-                    .show()
-                Log.e("RecipeDetail", "Failed to retrieve recipe ingredients")
+            }
+
+            nextButton.setOnClickListener {
+                if (currentPage < totalPages) {
+                    currentPage++
+                    updateInstruction()
+                    highlightCurrentStep(currentPage)
+                }
             }
         }
+    }
 
-        previousButton.setOnClickListener {
-            if (currentPage > 1) {
-                currentPage--
-                stepNumber.text = "Step $currentPage"
-                updateButtonVisibility()
-                // Handle page change here
-                recipeTitle.text = cookingSteps[currentPage - 1].recipe_title
-                recipeQty.text = cookingSteps[currentPage - 1].recipe_qty.toString() + "g"
-                recipeDesc.text = cookingSteps[currentPage - 1].recipe_desc
-                videoPath = cookingSteps[currentPage - 1].media_url
-                mediaController.setAnchorView(videoView)
-                videoView.setMediaController(mediaController)
-                videoView.setVideoURI(Uri.parse(videoPath))
-            }
+    private fun updateInstruction() {
+        if (currentPage <= directionsList.size) {
+            recipeDesc.text = directionsList[currentPage - 1]
+            updateButtonVisibility()
         }
+    }
 
-        nextButton.setOnClickListener {
-            if (currentPage < totalPages) {
-                currentPage++
-                stepNumber.text = "Step $currentPage"
-                updateButtonVisibility()
-                // Handle page change here
-                recipeTitle.text = cookingSteps[currentPage - 1].recipe_title
-                recipeQty.text = cookingSteps[currentPage - 1].recipe_qty.toString() + "g"
-                recipeDesc.text = cookingSteps[currentPage - 1].recipe_desc
-                videoPath = cookingSteps[currentPage - 1].media_url
-                mediaController.setAnchorView(videoView)
-                videoView.setMediaController(mediaController)
-                videoView.setVideoURI(Uri.parse(videoPath))
+    private fun createStepButtons(totalSteps: Int) {
+        stepContainer.gravity = Gravity.CENTER
+        for (i in 1..totalSteps) {
+            val stepButton = MaterialButton(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    gravity = Gravity.CENTER
+                    setMargins(10, 0, 10, 0)
+                }
+                text = i.toString()
+                setBackgroundColor(Color.WHITE)
+                setTextColor(Color.BLACK)
+                cornerRadius = 28
+                setOnClickListener {
+                    currentPage = i
+                    updateInstruction()
+                    highlightCurrentStep(currentPage)
+                }
+            }
+
+            stepContainer.addView(stepButton)
+        }
+    }
+
+    private fun highlightCurrentStep(currentStep: Int) {
+        for (i in 0 until stepContainer.childCount) {
+            val stepButton = stepContainer.getChildAt(i) as MaterialButton
+            val themeColor = ContextCompat.getColor(this, R.color.purple_theme_color)
+            if (i == currentStep - 1) {
+                stepButton.setBackgroundColor(themeColor)
+                stepButton.setTextColor(Color.WHITE)
+            } else {
+                stepButton.setBackgroundColor(Color.WHITE)
+                stepButton.setTextColor(Color.BLACK)
             }
         }
     }
@@ -137,69 +155,6 @@ class InstructionsActivity : AppCompatActivity() {
 //                nextButton.setOnClickListener { finish() }
 //        }
 //        else nextButton.text = "Next step"
-    }
-
-    private fun getRecipeData(foodId: Int, callback: (List<RecipeIngredient>?) -> Unit) {
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                val requestBody = JSONObject()
-                requestBody.put("food_id", foodId)
-
-                val request = Request.Builder()
-                    .url("http://10.0.2.2:8001/apis/food/detail")
-                    .post(RequestBody.create("application/json".toMediaTypeOrNull(), requestBody.toString()))
-                    .build()
-
-                val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }
-
-                if (!response.isSuccessful) {
-                    throw IOException("Failed to retrieve recipe ingredients")
-                }
-
-                val responseBody = response.body?.string()
-                val resultJson = JSONObject(responseBody ?: "")
-                val status = resultJson.optInt("status", 0)
-
-                if (status == 1) {
-                    val data = resultJson.optJSONArray("data")
-
-                    val recipeIngredients = mutableListOf<RecipeIngredient>()
-                    for (i in 0 until data.length()) {
-                        val ingredientJson = data.optJSONObject(i)
-                        val ingredient = Ingredient(
-                            ingredientJson.getInt("ingre_id"),
-                            ingredientJson.getString("ingre_name"),
-                            ingredientJson.getDouble("ingre_price").toFloat(),
-                            ingredientJson.getInt("ingre_calo"),
-                            ingredientJson.getDouble("ingre_fat").toFloat(),
-                            ingredientJson.getDouble("ingre_protein").toFloat(),
-                            ingredientJson.getDouble("ingre_carb").toFloat(),
-                            ingredientJson.getString("ingre_img")
-                        )
-
-                        val recipeQty = ingredientJson.getDouble("recipe_qty").toFloat()
-                        val recipeTitle = ingredientJson.getString("recipe_title")
-                        val recipeDesc = ingredientJson.getString("recipe_desc")
-                        val recipePrice = ingredientJson.getDouble("recipe_price").toFloat()
-                        val recipeCalories = ingredientJson.getDouble("recipe_calories").toFloat()
-                        val recipeProtein = ingredientJson.getDouble("recipe_protein").toFloat()
-                        val recipeFat = ingredientJson.getDouble("recipe_fat").toFloat()
-                        val recipeCarb = ingredientJson.getDouble("recipe_carb").toFloat()
-                        val recipeVideo = ingredientJson.getString("media_url")
-
-                        val recipeIngredient = RecipeIngredient(foodId, ingredient, recipeQty, recipeTitle, recipeDesc, recipePrice, recipeCalories, recipeCarb, recipeFat, recipeProtein, recipeVideo)
-                        recipeIngredients.add(recipeIngredient)
-                    }
-                    callback(recipeIngredients)
-                } else {
-                    callback(null)
-                }
-            } catch (e: Exception) {
-                // Handle the error here
-                callback(null)
-                Log.e("RecipeDetail", "Failed to retrieve recipe ingredients: ${e.message}")
-            }
-        }
     }
 }
 

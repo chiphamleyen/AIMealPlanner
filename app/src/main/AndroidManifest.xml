@@ -17,6 +17,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.CurrentOrderActivity"
             android:exported="false">
             <meta-data
@@ -74,6 +77,13 @@
         </activity>
         <activity
             android:name=".view.RegisterActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".view.RegisterInformationActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

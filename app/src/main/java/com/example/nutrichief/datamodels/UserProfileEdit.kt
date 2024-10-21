@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.util.Date
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class User(
+data class UserProfileEdit(
     var name: String?,
-    var email: String?,
-    var password: String?,
     var gender: String?,
     var height: Float?,
     var weight: Float?,

@@ -77,7 +77,7 @@ class AIMealPlanFragment : Fragment() {
 
     // chatbox
     private lateinit var chatbox: LinearLayout
-    private lateinit var editText: EditText
+    private lateinit var editText: TextView
     private lateinit var sendButton: ImageButton
 
     private lateinit var mealGenContainer: LinearLayout

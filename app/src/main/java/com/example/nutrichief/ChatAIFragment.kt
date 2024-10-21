@@ -144,9 +144,32 @@ class ChatAIFragment : Fragment() {
                         handleBotDetailMessage(message)
                         Log.d("meal", message.toString())
                     }
+                    "HISTORY" -> {
+                        val messageHistory = jsonObject.getJSONArray("message")
+                        handleHistoryMessages(messageHistory)
+                        Log.d("history", messageHistory.length().toString())
+                    }
                 }
             }
         }
+
+        private fun handleHistoryMessages(messageHistory: JSONArray) {
+            for (i in 0 until 10) {
+                val messageObj = messageHistory.getJSONObject(i)
+                val messageText = messageObj.getString("message")
+                val msgType = messageObj.getString("messageType")
+
+                if (msgType == "USERMESSAGE") {
+                    addChatMessage(messageText, isUser = true)  // Add user message
+                } else if (msgType == "BOT_TEXT_MESSAGE") {
+                    addChatMessage(messageText, isUser = false)  // Add bot message
+                } else if (msgType == "BOT_DETAIL_MESSAGE") {
+                    val detailedMessage = messageObj.getJSONObject("message")
+                    handleBotDetailMessage(detailedMessage)  // Add detailed bot message
+                }
+            }
+        }
+
 
         private fun handleBotDetailMessage(message: JSONObject) {
             val meal = Meal(

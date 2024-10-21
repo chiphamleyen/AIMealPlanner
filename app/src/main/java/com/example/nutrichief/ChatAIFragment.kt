@@ -1,17 +1,25 @@
 package com.example.nutrichief
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.nutrichief.datamodels.Meal
+import com.example.nutrichief.view.RecipeDetailActivity
 import com.google.android.material.textfield.TextInputEditText
 import okhttp3.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
@@ -57,7 +65,7 @@ class ChatAIFragment : Fragment() {
     private fun connectWebSocketWithAuth(jwtToken: String) {
         // Create the request with the Authorization header
         val request = Request.Builder()
-            .url("ws://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/chat/full_response")
+            .url("ws://mealplanner2.f5cda3hmgmgbb7ba.australiaeast.azurecontainer.io/api/v1/chat/full_response")
             .addHeader("Authorization", "Bearer $jwtToken")  // Add Authorization header
             .build()
 
@@ -85,16 +93,24 @@ class ChatAIFragment : Fragment() {
         textView.text = message
         textView.setTextColor(resources.getColor(android.R.color.black))
 
+        // Set padding to create margin between text and background
+        val padding = 20
+        textView.setPadding(padding, padding, padding, padding)
+
         // Set layout gravity for user or AI message
         val params = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
+
+        // Add margins between messages
+        params.setMargins(0, 8, 0, 8)
+
         if (isUser) {
-            params.gravity = View.TEXT_ALIGNMENT_VIEW_END
+            params.gravity = View.TEXT_ALIGNMENT_VIEW_START
             textView.setBackgroundResource(R.drawable.search_bar_background)
         } else {
-            params.gravity = View.TEXT_ALIGNMENT_VIEW_START
+            params.gravity = View.TEXT_ALIGNMENT_VIEW_END
             textView.setBackgroundResource(R.drawable.search_bar_background)
         }
         textView.layoutParams = params
@@ -103,7 +119,10 @@ class ChatAIFragment : Fragment() {
         chatContainer.addView(textView)
     }
 
+
     inner class ChatWebSocketListener : WebSocketListener() {
+
+        private val mealList = mutableListOf<Meal>()
         override fun onOpen(webSocket: WebSocket, response: Response) {
             Log.d("WebSocket", "Connected")
         }
@@ -118,32 +137,113 @@ class ChatAIFragment : Fragment() {
                     "BOT_TEXT_MESSAGE" -> {
                         val message = jsonObject.getString("message")
                         addChatMessage(message, isUser = false)
+                        Log.d("text", message.toString())
                     }
                     "BOT_DETAIL_MESSAGE" -> {
                         val message = jsonObject.getJSONObject("message")
-                        val title = message.getString("title")
-                        val description = message.getString("desc")
-                        val ingredients = message.getJSONArray("ingredients")
-                        val directions = message.getJSONArray("directions")
-
-                        // Display detailed message (you can customize the format)
-                        val detailedMessage = StringBuilder()
-                        detailedMessage.append("**$title**\n")
-                        detailedMessage.append("$description\n")
-                        detailedMessage.append("Ingredients:\n")
-                        for (i in 0 until ingredients.length()) {
-                            detailedMessage.append("- ${ingredients.getString(i)}\n")
-                        }
-                        detailedMessage.append("Directions:\n")
-                        for (i in 0 until directions.length()) {
-                            detailedMessage.append("- ${directions.getString(i)}\n")
-                        }
-
-                        addChatMessage(detailedMessage.toString(), isUser = false)
+                        handleBotDetailMessage(message)
+                        Log.d("meal", message.toString())
                     }
                 }
             }
         }
+
+        private fun handleBotDetailMessage(message: JSONObject) {
+            val meal = Meal(
+                title = message.getString("title"),
+                ingredients = List(message.getJSONArray("ingredients").length()) {
+                    message.getJSONArray("ingredients").getString(it)
+                },
+                directions = List(message.getJSONArray("directions").length()) {
+                    message.getJSONArray("directions").getString(it)
+                },
+                calories = message.optDouble("calories", 0.0),
+                fat = message.optDouble("fat", 0.0),
+                protein = message.optDouble("protein", 0.0),
+                sodium = message.optDouble("sodium", 0.0),
+                rating = message.optDouble("rating", 0.0),
+                categories = List(message.getJSONArray("categories").length()) {
+                    message.getJSONArray("categories").getString(it)
+                }
+            )
+
+            mealList.add(meal)
+
+            if (mealList.size >= 3) {
+                displayMealCards(mealList)
+            }
+        }
+
+
+        private fun openRecipeDetailActivity(meal: Meal) {
+            val intent = Intent(requireContext(), RecipeDetailActivity::class.java)
+            intent.putExtra("meal_title", meal.title)
+            intent.putExtra("meal_calories", meal.calories)
+            intent.putExtra("meal_protein", meal.protein)
+            intent.putExtra("meal_fat", meal.fat)
+            intent.putExtra("meal_ingredients", ArrayList(meal.ingredients))
+            intent.putExtra("meal_directions", ArrayList(meal.directions))
+            startActivity(intent)
+        }
+
+        private fun displayMealCards(meals: List<Meal>) {
+//            chatContainer.removeAllViews()
+
+            for (meal in meals) {
+                Log.d("meal display", meal.toString())
+                val mealCardView = LayoutInflater.from(context).inflate(R.layout.meal_card, chatContainer, false)
+
+                val mealTitle = mealCardView.findViewById<TextView>(R.id.meal_title)
+                val mealDescription = mealCardView.findViewById<TextView>(R.id.meal_description)
+                val detailsButton = mealCardView.findViewById<Button>(R.id.meal_details_button)
+
+                val addMealButton = mealCardView.findViewById<ImageView>(R.id.add_meal_button)
+                addMealButton.setOnClickListener {
+                    saveMealToSharedPrefs(meal)
+                }
+
+                mealTitle.text = meal.title
+                mealDescription.text = meal.rating.toString()
+
+                detailsButton.setOnClickListener {
+                    openRecipeDetailActivity(meal)
+                }
+
+                chatContainer.addView(mealCardView)
+            }
+        }
+
+        private fun saveMealToSharedPrefs(meal: Meal) {
+            val sharedPreferences = requireContext().getSharedPreferences("MealPrefs", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+
+            // Lấy danh sách meal đã lưu trước đó
+            val mealListJson = sharedPreferences.getString("saved_meals", "[]")
+            val mealList = JSONArray(mealListJson)
+
+            // Chuyển meal thành JSONObject
+            val mealJson = JSONObject().apply {
+                put("title", meal.title)
+                put("ingredients", JSONArray(meal.ingredients))
+                put("directions", JSONArray(meal.directions))
+                put("calories", meal.calories)
+                put("fat", meal.fat)
+                put("protein", meal.protein)
+                put("sodium", meal.sodium)
+                put("rating", meal.rating)
+                put("categories", JSONArray(meal.categories))
+            }
+
+            // Thêm meal mới vào danh sách
+            mealList.put(mealJson)
+
+            // Lưu lại danh sách vào SharedPreferences
+            editor.putString("saved_meals", mealList.toString())
+            editor.apply()
+
+            Toast.makeText(requireContext(), "Meal added!", Toast.LENGTH_SHORT).show()
+        }
+
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             Log.e("WebSocket", "Error: ${t.message}")

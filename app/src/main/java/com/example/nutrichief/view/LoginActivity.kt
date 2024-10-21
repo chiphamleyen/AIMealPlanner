@@ -104,7 +104,7 @@ class LoginActivity : AppCompatActivity() {
                     .toRequestBody(jsonMediaType)
 
                 val request = Request.Builder()
-                    .url("http://mealplanner.aqgxexddffeza6gn.australiaeast.azurecontainer.io/api/v1/account/login")
+                    .url("http://mealplanner2.f5cda3hmgmgbb7ba.australiaeast.azurecontainer.io/api/v1/account/login")
                     .post(requestBody)
                     .build()
 

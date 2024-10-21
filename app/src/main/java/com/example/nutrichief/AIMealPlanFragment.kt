@@ -25,6 +25,8 @@ import com.example.nutrichief.datamodels.Meal
 import com.example.nutrichief.view.RecipeDetailActivity
 import com.example.nutrichief.view.UserProfileActivity
 import androidx.navigation.fragment.findNavController
+import com.example.nutrichief.datamodels.User
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -82,6 +84,8 @@ class AIMealPlanFragment : Fragment() {
 
     private lateinit var mealGenContainer: LinearLayout
 
+    private lateinit var welcomeText: TextView
+
     // Constants for SharedPreferences keys
     private val MEAL_PLAN_KEY = "meal_plan"
     private val LAST_FETCH_DATE_KEY = "last_fetch_date"
@@ -128,6 +132,8 @@ class AIMealPlanFragment : Fragment() {
 
         mealGenContainer = view.findViewById(R.id.meal_gen_container)
 
+        welcomeText = view.findViewById(R.id.welcome_user)
+
         val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE) ?: return view
 
         // Initialize checkbox listeners to update streak counter when checkboxes are toggled
@@ -145,6 +151,16 @@ class AIMealPlanFragment : Fragment() {
 
         // Update streak TextView when the fragment is created to display the current streak
         updateStreakTextView(sharedPreferences)
+        val jwtToken = sharedPreferences.getString("jwt_token", null)
+        fetchUserProfile(jwtToken) { user ->
+            user?.let {
+                // Populate user profile data to TextViews
+                welcomeText.text = "Hi, ${user.name} \uD83D\uDC4B"
+            } ?: run {
+                // Handle the case when user is null (error occurred)
+                Log.e("UserProfile", "Failed to retrieve user profile")
+            }
+        }
 
         editText = view.findViewById(R.id.chatbox_edittext)
         sendButton = view.findViewById(R.id.chatbox_send_button)
@@ -397,7 +413,6 @@ class AIMealPlanFragment : Fragment() {
             for (meal in savedMeals) {
                 val mealCardView = LayoutInflater.from(context).inflate(R.layout.meal_card_main, mealGenContainer, false)
 
-                // Set margin để tạo khoảng cách giữa các card
                 val layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -416,10 +431,49 @@ class AIMealPlanFragment : Fragment() {
                 mealGenContainer.addView(mealCardView)
             }
         } else {
-            Toast.makeText(requireContext(), "No saved meals found", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "No saved meals found", Toast.LENGTH_SHORT).show()
         }
     }
 
+    private fun fetchUserProfile(token: String?, callback: (User?) -> Unit) {
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                if (token == null) {
+                    callback(null)
+                    return@launch
+                }
+
+                val request = Request.Builder()
+                    .url("http://mealplanner2.f5cda3hmgmgbb7ba.australiaeast.azurecontainer.io/api/v1/account/profile")
+                    .addHeader("Authorization", "Bearer $token")
+                    .get()
+                    .build()
+
+                val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }
+
+                if (!response.isSuccessful) {
+                    throw java.io.IOException("Failed to retrieve user profile")
+                }
+
+                val responseBody = response.body?.string()
+                val resultJson = JSONObject(responseBody ?: "")
+                val errorCode = resultJson.optInt("error_code", -1)
+
+                if (errorCode == 0) {
+                    val data = resultJson.optJSONObject("data")
+
+                    val userObj = jacksonObjectMapper().readValue(data?.toString() ?: "", User::class.java)
+
+                    callback(userObj)
+                } else {
+                    callback(null)
+                }
+            } catch (e: Exception) {
+                callback(null)
+                Log.e("UserProfile", "Failed to retrieve user profile: ${e.message}")
+            }
+        }
+    }
 
     private fun getGeneratedMealPlan(
         token: String?,

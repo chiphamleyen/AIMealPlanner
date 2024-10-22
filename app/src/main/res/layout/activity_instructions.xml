@@ -76,7 +76,12 @@
                     android:text="Step 1"
                     android:textColor="@color/black"
                     android:textSize="26sp" />
-
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
                 <LinearLayout
                     android:id="@+id/buttonContainer"
                     android:layout_width="match_parent"
@@ -100,7 +105,7 @@
 <!--                        app:cornerRadius="28dp" />-->
 
                 </LinearLayout>
-
+                </HorizontalScrollView>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
@@ -112,7 +117,8 @@
                     android:layout_height="346dp"
                     android:paddingVertical="10dp"
                     android:text="Cut the ripe avocado in half, remove the pit, and scoop out the flesh into a bowl. Use a fork to mash the avocado until it reaches your desired consistency."
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:justificationMode="inter_word"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -134,7 +140,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
-                        android:text=" Next step"
+                        android:text="Next step"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <Button
+                        android:id="@+id/finishButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:text="Finish"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"

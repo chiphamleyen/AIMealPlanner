@@ -37,10 +37,6 @@ class RecipeDetailActivity : AppCompatActivity() {
     private lateinit var ingredientRecyclerView: RecyclerView
     private lateinit var adapter: IngredientsAdapter
 
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        .build()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipe_detail)
@@ -76,9 +72,14 @@ class RecipeDetailActivity : AppCompatActivity() {
             intent.putStringArrayListExtra("meal_directions", mealDirections)
             startActivity(intent)
         }
+
+        val backButton = findViewById<ImageView>(R.id.back_button)
+        backButton.setOnClickListener {
+            onBackPressed()
+        }
     }
 
-
-
-    fun goBack(view: View) { onBackPressedDispatcher.onBackPressed() }
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 }

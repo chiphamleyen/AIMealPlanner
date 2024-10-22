@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:text="Already have account? Sign up" />
+                android:text="Already have account? Sign in" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

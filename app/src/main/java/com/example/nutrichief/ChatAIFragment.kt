@@ -158,7 +158,7 @@ class ChatAIFragment : Fragment() {
         }
 
         private fun handleHistoryMessages(messageHistory: JSONArray) {
-            for (i in 0 until 10) {
+            for (i in 0 until messageHistory.length()) {
                 val messageObj = messageHistory.getJSONObject(i)
                 val messageText = messageObj.getString("message")
                 val msgType = messageObj.getString("messageType")

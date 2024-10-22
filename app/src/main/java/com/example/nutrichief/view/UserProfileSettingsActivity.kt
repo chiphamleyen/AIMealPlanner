@@ -191,8 +191,8 @@ class UserProfileSettingsActivity : AppCompatActivity() {
             val user = UserProfileEdit(
                 fullName,
                 gender,
-                weight,
                 height,
+                weight,
                 dateUtil,
                 allergyList,
                 dietList,

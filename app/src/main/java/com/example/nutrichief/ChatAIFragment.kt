@@ -233,7 +233,7 @@ class ChatAIFragment : Fragment() {
                 }
 
                 mealTitle.text = meal.title
-                mealDescription.text = meal.rating.toString()
+                mealDescription.text = "Rating: ${meal.rating.toString()}"
 
                 detailsButton.setOnClickListener {
                     openRecipeDetailActivity(meal)

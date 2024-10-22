@@ -32,6 +32,7 @@ class InstructionsActivity : AppCompatActivity() {
 
     private lateinit var previousButton: Button
     private lateinit var nextButton: Button
+    private lateinit var finishButton: Button
     private lateinit var stepNumber: TextView
     private lateinit var recipeTitle: TextView
     private lateinit var recipeQty: TextView
@@ -48,6 +49,7 @@ class InstructionsActivity : AppCompatActivity() {
         recipeDesc = findViewById(R.id.recipeDesc)
         previousButton = findViewById(R.id.previousButton)
         nextButton = findViewById(R.id.nextButton)
+        finishButton = findViewById(R.id.finishButton)
 
         stepContainer = findViewById(R.id.buttonContainer)
 
@@ -69,7 +71,6 @@ class InstructionsActivity : AppCompatActivity() {
         } else {
             Log.e("InstructionsActivity", "Video path is null or empty")
         }
-
 
         val directions = intent.getStringArrayListExtra("meal_directions")
 
@@ -103,6 +104,7 @@ class InstructionsActivity : AppCompatActivity() {
         if (currentPage <= directionsList.size) {
             recipeDesc.text = directionsList[currentPage - 1]
             updateButtonVisibility()
+            stepNumber.text = "Step $currentPage"
         }
     }
 
@@ -149,6 +151,16 @@ class InstructionsActivity : AppCompatActivity() {
     private fun updateButtonVisibility() {
         previousButton.visibility = if (currentPage == 1) View.GONE else View.VISIBLE
         nextButton.visibility = if (currentPage == totalPages) View.GONE else View.VISIBLE
+        if (currentPage == totalPages) {
+            nextButton.visibility = View.GONE
+            finishButton.visibility = View.VISIBLE
+            finishButton.setOnClickListener {
+                finish()  // Gọi hàm hoàn thành quy trình
+            }
+        } else {
+            nextButton.visibility = View.VISIBLE
+            finishButton.visibility = View.GONE
+        }
 //        if (currentPage == totalPages) {
 //            nextButton.text = "Finish"
 //            if (nextButton.text == "Finish")

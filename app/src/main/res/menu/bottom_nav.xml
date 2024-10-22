@@ -8,13 +8,13 @@
         android:id="@+id/nav_item_search"
 
         android:icon="@drawable/ic_calender2"
-        android:title="Search" />
+        android:title="Calendar" />
     <item
         android:id="@+id/nav_item_collection"
-        android:icon="@drawable/ic_collection"
-        android:title="ChatAI" />
+        android:icon="@drawable/ic_community"
+        android:title="AI Chat" />
     <item
         android:id="@+id/nav_item_community"
-        android:icon="@drawable/ic_community"
+        android:icon="@drawable/ic_group"
         android:title="Community" />
 </menu>
